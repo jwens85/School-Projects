@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # Load the image
-img = cv2.imread('Image_selfie.jpg')
+img = cv2.imread('Image_Noisy.jpg')
 
 # Apply Gaussian filter using a 5x5 kernel and sigma = 1.0
 gaussian_filtered = cv2.GaussianBlur(img, (5, 5), 1.0)

@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # Load image in grayscale
-img = cv2.imread('Image_selfie.jpg', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('Image_Noisy.jpg', cv2.IMREAD_GRAYSCALE)
 
 # Optional: smooth first with Gaussian to reduce noise
 blurred = cv2.GaussianBlur(img, (5, 5), 1.0)

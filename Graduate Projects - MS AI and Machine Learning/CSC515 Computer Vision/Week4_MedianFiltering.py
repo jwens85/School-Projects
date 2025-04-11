@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # Load the image
-img = cv2.imread('Image_selfie.jpg')
+img = cv2.imread('Image_Noisy.jpg.jpg')
 
 # Apply median filter using a 5x5 kernel
 # Note: kernel size must be an odd integer

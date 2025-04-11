@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # Load an image
-img = cv2.imread('Image_Selfie.jpg')
+img = cv2.imread('Image_Noisy.jpg')
 
 # Apply mean filter using a 5x5 kernel
 mean_filtered = cv2.blur(img, (5, 5))
