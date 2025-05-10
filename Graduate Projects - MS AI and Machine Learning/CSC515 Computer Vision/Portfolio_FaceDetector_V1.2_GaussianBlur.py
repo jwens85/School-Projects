@@ -1,3 +1,4 @@
+#V1.2 with Gaussian blurring
 import cv2
 import os
 
