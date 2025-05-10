@@ -11,8 +11,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 mtcnn = MTCNN(
     keep_all=True,
     device=device,
-    thresholds=[0.3, 0.4, 0.4],
-    min_face_size=20,
+    thresholds=[0.3, 0.3, 0.4],
+    min_face_size=15,
     factor=0.7
 )
 
@@ -44,20 +44,29 @@ for path in image_file_paths:
 
     gray     = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     enhanced = clahe.apply(gray)
-    enhanced = cv2.GaussianBlur(enhanced, (5, 5), 0)
+    enhanced = cv2.GaussianBlur(enhanced, (1, 1), 0)
 
+    # Haar face detection (red boxes) and Haar eye detection (green boxes)
     faces = face_cascade.detectMultiScale(enhanced, scaleFactor=1.1, minNeighbors=5)
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
-        roi_gray  = enhanced[y:y+h, x:x+w]
-        roi_color = img[y:y+h, x:x+w]
-        eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=3, minSize=(20,20))
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        roi_gray  = enhanced[y:y + h, x:x + w]
+        roi_color = img[y:y + h, x:x + w]
+        eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=3, minSize=(20, 20))
         for (ex, ey, ew, eh) in eyes:
-            cv2.rectangle(roi_color, (ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
+            cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
 
+    # CNN face detection (blue boxes) and landmarks (blue circles)
     rgb                     = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     boxes, probs, landmarks = mtcnn.detect(rgb, landmarks=True)
 
+    # Draw blue rectangles for CNN-detected faces
+    if boxes is not None:
+        for box in boxes:
+            x1, y1, x2, y2 = map(int, box)
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+
+    # Draw blue circles for CNN landmarks (eyes)
     if landmarks is not None:
         for pts in landmarks:
             left_eye  = tuple(map(int, pts[0]))
@@ -73,7 +82,7 @@ if processed_images:
     row1 = np.hstack(processed_images[0:2])
     row2 = np.hstack(processed_images[2:4])
     grid = np.vstack([row1, row2])
-    cv2.imshow("Faces (red), Haar Eyes (green), CNN Eyes (blue)", grid)
+    cv2.imshow("Faces (red=Haar, blue=CNN), Eyes (green=Haar, blue=CNN)", grid)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 else:
