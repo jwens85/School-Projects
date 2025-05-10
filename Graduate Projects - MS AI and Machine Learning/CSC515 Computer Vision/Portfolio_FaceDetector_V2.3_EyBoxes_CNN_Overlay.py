@@ -8,8 +8,17 @@ import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="facenet_pytorch")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.6, 0.7, 0.7], min_face_size=20, factor=0.7)
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+mtcnn = MTCNN(
+    keep_all=True,
+    device=device,
+    thresholds=[0.3, 0.4, 0.4],
+    min_face_size=20,
+    factor=0.7
+)
+
+face_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+)
 eye_cascade  = cv2.CascadeClassifier("haarcascade_eye.xml")
 clahe        = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
@@ -27,6 +36,7 @@ for path in image_file_paths:
     if not os.path.isfile(path):
         print(f"File not found: {path}")
         continue
+
     img = cv2.imread(path)
     if img is None:
         print(f"Unable to load image: {path}")
@@ -38,20 +48,18 @@ for path in image_file_paths:
 
     faces = face_cascade.detectMultiScale(enhanced, scaleFactor=1.1, minNeighbors=5)
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
         roi_gray  = enhanced[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]
         eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.1, minNeighbors=3, minSize=(20,20))
         for (ex, ey, ew, eh) in eyes:
-            cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+            cv2.rectangle(roi_color, (ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
 
-    rgb                 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    boxes, probs, lmnts = mtcnn.detect(rgb, landmarks=True)
+    rgb                     = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    boxes, probs, landmarks = mtcnn.detect(rgb, landmarks=True)
 
-    if lmnts is not None:
-        for idx, pts in enumerate(lmnts):
-            if probs[idx] < 0.50:
-                continue
+    if landmarks is not None:
+        for pts in landmarks:
             left_eye  = tuple(map(int, pts[0]))
             right_eye = tuple(map(int, pts[1]))
             cv2.circle(img, left_eye,  3, (255, 0, 0), -1)
