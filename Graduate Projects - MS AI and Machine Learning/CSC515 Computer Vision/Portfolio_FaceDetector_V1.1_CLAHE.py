@@ -29,7 +29,7 @@ for image_index, image_path in enumerate(image_file_paths):
     enhanced_image = clahe.apply(grayscale_image)
 
     detected_faces = frontal_face_classifier.detectMultiScale(
-        enhanced_image, scaleFactor=1.1, minNeighbors=5
+        enhanced_image, scaleFactor=1.1, minNeighbors=6
     )
 
     for (x, y, w, h) in detected_faces:
