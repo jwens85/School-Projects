@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.stats as ss
 import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
+from itertools import product
 
 # value = np.random.randint(0,1000000000)
 # print(value)
@@ -305,7 +306,74 @@ from mpl_toolkits.mplot3d import Axes3D
 #
 # # Turn off the last empty plot (6th subplot)
 # axes.flat[-1].axis('off')
-#
-# # Improve spacing
 # fig.tight_layout()
 # plt.show()
+# #------------------------------------------------
+# Define prices
+# Define costs
+# costs = np.array([80, 10, 5])  # Per person, root beer, hot dog
+# base_cost = 40
+#
+# # Input ranges
+# number_people = [2, 3]
+# number_rbs = [0, 1]
+# number_hotdogs = [2, 4]
+#
+# # Cartesian product function
+# np_cartesian_product = lambda *arrays: np.array(list(product(*arrays)))
+# counts = np_cartesian_product(number_people, number_rbs, number_hotdogs)
+#
+# # Compute total cost using dot product
+# totals = np.dot(counts, costs) + base_cost
+#
+# # Construct DataFrame
+# columns = ['People', 'RootBeer', 'HotDogs', 'TotalCost']
+# df = pd.DataFrame(np.column_stack([counts, totals]), columns=columns)
+# df['TotalCost'] = df['TotalCost'].astype(int)
+#
+# # Output the first 8 rows
+# print(df.head(8))
+# #------------------------------------------------
+#Nonlinearity
+# # Create a 2x2 grid of subplots
+# fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+# fig.tight_layout(pad=4.0)
+#
+# # Titles for each subplot, using LaTeX-style math rendering
+# titles = [
+#     "$y=c_0$",
+#     "$y=c_1x + c_0$",
+#     "$y=c_2x^2 + c_1x + c_0$",
+#     "$y=c_3x^3 + c_2x^2 + c_1x + c_0$"
+# ]
+#
+# # Generate x values
+# xs = np.linspace(-10, 10, 100)
+#
+# # Loop over each subplot and plot a polynomial of increasing degree
+# for power, (ax, title) in enumerate(zip(axes.flat, titles), 1):
+#     coeffs = np.random.uniform(-5, 5, power)
+#     poly = np.poly1d(coeffs)
+#     ax.plot(xs, poly(xs))
+#     ax.set_title(title)
+#
+# plt.show()
+# #------------------------------------------------
+# plt.figure(figsize=(2, 1.5))
+#
+# # Input values
+# xs = np.linspace(-10, 10, 101)
+#
+# # Coefficients for the quadratic polynomial: 2x^2 + 3x + 4
+# coeffs = np.array([2, 3, 4])
+#
+# # Compute y-values using a dot product over polynomial terms
+# ys = np.dot(coeffs, [xs**2, xs, np.ones_like(xs)])
+#
+# # Plot the curve
+# plt.plot(xs, ys)
+# plt.title("$y = 2x^2 + 3x + 4$")
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
+# #------------------------------------------------
