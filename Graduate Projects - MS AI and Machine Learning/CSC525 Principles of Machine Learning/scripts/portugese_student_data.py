@@ -24,4 +24,4 @@ def grab_student_numeric_discrete():
     df.drop(columns=['G3'], inplace=True)
 
     # Save cleaned file
-    df.to_csv('portugese_student_numeric_discrete.csv', index=False)
+    df.to_csv('portugese_student_numeric.csv', index=False)
