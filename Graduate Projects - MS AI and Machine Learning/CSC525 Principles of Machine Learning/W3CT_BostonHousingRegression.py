@@ -9,6 +9,7 @@
 #In this project we'll implement  a simple linear regression model to the Boston Housing dataset to predict housing prices based on various predictors. We'll explore the dataset, evaluate the model and create some visualizations for feature analysis to see what the leading factors for median home prices were in 1978 Boston
 
 from sklearn.linear_model import LinearRegression as lr
+import matplotlib.pyplot as matplot
 #(Scikit-learn Developers, 2024a)
 
 #We'll use the basic LinearRegression model from sklearn's linear_model module to fit and predict linear relationships in our dataset. This model is a basic implementation of ordinary least squares regression. The model seeks to minimize the residual sum of squares between observed targets and predicted values.
@@ -190,7 +191,8 @@ mse_list = []
 r2_list = []
 
 #Run the model 100 times in a for loop just like before
-for i in range(100000): #Feel free to increase the iterations to explore the law of large numbers
+for i in range(100): #Changed the code back to 100 so it can be run timely when I submit the
+    # assignment
     #Train/test split, same as before
     X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2,
@@ -281,7 +283,8 @@ print("R²:", r2)
 mse_trimmed = []
 r2_trimmed = []
 
-for i in range(100000):
+for i in range(100): #Changed it back to 100 from 100,000 so the code can be run timely when I
+    # submit the assignment
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     model = lr()
     model.fit(X_train, y_train)
@@ -310,6 +313,13 @@ matplot.show()
 #Running the loop 100,000 times, we can observe that the MSE distribution shifts leftward just a little bit, peaking around 14-15. This suggests a modest reduction in average error and improved consistency though the change is not dramatic. The R² scores remain tightly clustered around 0.75-0.80, indicating stable model performance across splits, with only a slight improvement in variance agter trimming the capped outliers. Overall, the comparison shows that removing the data when medv == 50 has a subtle but measurable effect. My main takeaway from this expirement is that the law of large numbers can compensate for the presence of moderate outliers when the model is evaluated over a sufficiently large number of randomized train/test splits. Rather than relying on manual data manipulation, repeated resampling allows the model's true performance characteristics to emerge. In this case, running the model 100,000 times smooths out the variability introduced by outliers, showing that the core performance metrics remain stable even without trimming the dataset.
 #%%
 #I wanted to see which features had the strongest positive or negative influence on housing prices. I asked the LLM (Grimoire, 2025) to create a horizontal bar chart to visualize which features had the most influential effect on medv. A positive coefficient shows that an increase in that feature tends to raise the predicted medv (in this case it was average number of rooms), and a negative coefficient means the opposite. Polution (nox = nitric oxide concentration) had the most substantial negative effect, followed by distance to employment centers, and then pupil-teacher ratio, where having a larger distance or ratio of students:teachers tends to have a negative impact on medv.
+import pandas as pd #Bug fix changing from Jupyter notebook to .py file
+
+coefficients = pd.DataFrame({
+    "Feature": X.columns,
+    "Coefficient": model.coef_
+})
+
 matplot.figure(figsize=(10, 6))
 matplot.barh(coefficients["Feature"], coefficients["Coefficient"], color='teal')
 matplot.xlabel("Coefficient Value")
