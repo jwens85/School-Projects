@@ -1,0 +1,723 @@
+#%%
+import torch
+from tensorboard.notebook import display
+
+print("Running PyTorch Version:", torch.__version__)
+print("Is CUDA Available?:", torch.cuda.is_available())
+
+if torch.cuda.is_available():
+    print("Torch is running on your", torch.cuda.get_device_name(0))
+    print("Current device:", torch.cuda.current_device())
+else:
+    print("You're using your CPU for this program")
+
+#(NVIDIA Developers, 2024)
+
+#This cell checks the computing environment for the PyTorch project. We import the torch library and print what version is installed. This cell verifies whether a CUDA capable GPU is available for hardware accelleration. If a CUDA capable GPU is detected, it reports the GPU name and the device index, otherwise, it prints that the program will be running on the CUPU.
+#%%
+#Let's import the CIFAR-10 Dataset (GeeksforGeeks, 2024) (PyTorch Documentation, n.d. -j), (PyTorch Documentation, n.d. -i)
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+#Declare the image_grayscale variable and use torchvision.transforms to set output channels to 1 (i.e. a single channel grayscale image)
+image_grayscale = transforms.Grayscale(num_output_channels=1)
+#(PyTorch Documentation, n.d. -k)
+
+#Declare the variable grayscale_to_tensor and store it in an instance of the ToTensor transform. We're converting our grayscale image into a tensor format that Torch will be able to work with easily
+grayscale_to_tensor = transforms.ToTensor()
+#(PyTorch Documentation, n.d. -l)
+
+#Here we'll use torchvision.transforms.Compose to chain a few transformations together. First we'll apply the grayscale conversion, followed by the tensor conversion
+transform = transforms.Compose([image_grayscale, grayscale_to_tensor])
+#(PyTorch Documentation, n.d. l-)
+
+#Declare the training_data variable and initialize it with the CIFAR-10 dataset from torchvision.datasets. We specify the root directrory here as ./data, set to train=True to indicate we want the training portion, and enable download=True to fetch the dataset automatically if it's not already present locally. The transform argument here applys our preprocessing pipeline to make sure that each image is converted to grayscale and then transformed into a tensor as it is loaded
+training_data = datasets.CIFAR10(root="./data", train=True, download=True, transform=transform)
+#(PyTorch Documentation, n.d. -j)
+
+#Declare the training_loader variable and initialize it with a DataLoader, which wraps the training_data dataset to allow Torch to batch process the data during training. Setting the batch size to 50 here means the model will receive 50 images per iteration. The shuffle=True parameter ensures that the data is shuffled randomly at the beginning of each epoch, in hopes that it will prevent the model from overfitting patterns based on the order of the data
+training_loader = DataLoader(training_data, batch_size=50, shuffle=True)
+#(PyTorch Documentation, n.d. -h)
+
+#In this cell, we will import and prepare the CIFAR-10 dataset for our deep Pytorch model. We'll need to import TorchVision's datasets, and transforms library's as well as Torch Utility's DataLoader library. With these loaded we can start to set up a simple preprocessing pipeline to convert images to greyscale, and then to a tensor so that it plays nice with PyTorch. We can then load the CIFAR-10 dataset and apply our transformation pipeline during data import to ensure that each image is processed uniformly before reaching the model. Finally, we'll wrap the dataset in a DataLoader, to handle batching and shuffling during training. This setup allows our model to recieve the data efficiently and in a randomized order to (hopefully) improve training and manage the possibility of overfitting patterns based on the order that the images appear.
+#%%
+# Pull a single batch from the training_loader and inspect the input shape
+
+#Declare the variable batch_iterator and assign it an iterator created from the training_loader. This lets us retrieve a single batch from the training data loader
+batch_iterator = iter(training_loader)
+#(Kurama & Mukherjee, 2025), (PyTorch Documentation n.d -b)
+
+#Using Python's next() function, we'll retrieve a single batch from batch_iterator. This batch will contain both the image tensors and their corresponding class labels by default. We're just doing colorization here not classification, and we don't particularly care about the class labels. We'll declare images as a new variable and assign it the first item from the batch, the _ operator is a Python convention that means 'I am intentionally ignoring this value', in this case, the image class (bird, airplane, etc.)
+images, _ = next(batch_iterator)
+#(Kurama & Mukherjee, 2025), (PyTorch Documentation n.d -b)
+
+#Simple print statement to confirm the shape of the image batch (batch size, channels, height, width
+print("Shape of our input batch is:", images.shape)
+
+#This cell pulls a single batch of data from the training_loader so we can inspect its structure before feeding it into the model. We can create an iterator from the DataLoader, then use Python's built-in next() function to retrieve one batch consisting of our grayscale image tensors. We'll print the shape of the input batch here to confirm that the dimensions are consistent with expectations for the model's input. We can see that torch.Size([50, 1, 32, 32]) is giving us a batch size of 50, 1 grayscale chanel, with a 32 x 32 pixel image size which is exactly what we were expecting
+#%%
+#Visualization of the grayscale images from the current batch. I used an LLM here (Grimoire, 2025) to generate a pyplot to display the first 6 images in the batch, arranged horizontally with titles indicating the image's order in the index. Each imaage needs to be converted from a PyTorch tensor to a NumPy array and shown using the 'gray' colormap to reflect its single channel format.
+
+import matplotlib.pyplot as plt
+
+fig, axs = plt.subplots(1, 6, figsize=(12, 2))
+for i in range(6):
+    img = images[i].squeeze(0).cpu().numpy()
+    axs[i].imshow(img, cmap='gray')
+    axs[i].set_title(f"Image {i + 1}")
+    axs[i].axis('off')
+plt.tight_layout()
+plt.show()
+#(Grimoire, 2025)
+
+#It looks like our batching system is working as intended, since we're able to extract and visualize multiple grayscale images from a single batch without issue. The dimensions and format match our expectations, and it appears that our simple preprocessing pipeline is functioning correctly. It's important to note that we've converted the images from a PyTorch tensor to a NumPy array before visualization, and applied the 'gray' colormap as an abstraction of the single-channel nature of our tensors.
+#%%
+#Create a transformation pipeline for target images that converts the RGB image into a tensor so that loss can be calculated when we train the model
+
+#Same idea as above, we need to convert the ground-truth RGB image into a tensor, same as we did for the imput, escept this time we preserve the color information for use as a training target
+transform_target = transforms.Compose([
+    transforms.ToTensor()
+])
+#(PyTorch Documentation, n.d. -l)
+
+#We've already transformed our input images to PyTorch tensors, but we also need to apply a transformation to the target images. Since this is a supervised colorization task, the target is the original RGB image. This will need to be converted to a tensor as well so that it can be used in our training model. Without this step the model wouldn't be able to compute loss against the unprocessed PIL image.
+#%%
+#I got stuck on this step and used an LLM (Grimoire, 2025) to help me out. The default CIFAR10 class will only support one transform (transform=) which was applied already to the input image. We need a way to apply seprate transforms to both the input (grayscale) and the target (color) images so that the model can learn to map between them. By creating a customized subclass, we can return a tuple containing both the preprocessed input tensor and the original RGB target tensor from the same image
+
+#We've already imported the CIFAR data in cell 2, but that import only gave us access to the dataset class through the datasets' namespace. In order to subclass CIFAR10 directly, we'll import it here explicitly here so we can use it as the base class in our custom CIFAR10Colorization definition. Without it, Python wouldn't recognize CIFAR10 as a valid superclass.
+from torchvision.datasets import CIFAR10
+
+#Define a custom dataset class that inherits from CIFAR10
+class CIFAR10Colorization(CIFAR10):
+    #Initialize the custom dataset with arguments for:
+    #- self - refers to the current instance of our CIFAR10Colorization class to allow access to the dataset object's internal state and methods
+    #- *args - Uses * to collect any positional arguments passed to the constructor as a single tuple. This will allow the class to accept the standard CIFAR10 arguments like the dataset root path and whether to load the training or test split
+    #- transform_input=None - A custom keyword argument for specifying the transform pipeline should be applied to the input images. Here we'll set it to None by default to make the transform optional to allow conditional application later in the dataset logic
+    #- transform_target=None - Another custom keyword argument for specifying the transformation to apply to the target images
+    #- **kwargs - The double asterisk ** is python syntax used in function definitions to collect any extra keyword arguments into a dictionary called kwargs. This allows the class to accept and forward parameters like train, download, or any future arguments that might be expected by the CIFAR10 class
+    def __init__(self, *args, transform_input=None, transform_target=None, **kwargs):
+        #Here we'll call the superclass constructor super(), which will allow us to initialize the CIFAR10 base class with the original arguments, preserving its built-in loading and setup behavior within our subclass
+        super().__init__(*args, **kwargs)
+        #Store the input transform pipeline as an instance variable so it can be applied later when retrieving a dataset sample
+        self.transform_input = transform_input
+        #Same idea with the target transform pipeline
+        self.transform_target = transform_target
+    #(Grimoire, 2025), (PyTorch Documentation, n.d. -a)
+
+    #This is a Python special method that defines how to retrieve a single sample from the dataset by its index. It allows DataLoader to access individual image pairs (input and target) during training and evaluation
+    def __getitem__(self, index):
+        #Retrieve the original CIFAR10 image from the base dataset and discard the classification label since we're not classifying here. By calling the parent class's __getitem__ method within super(), we are reusing its built-in data loading logic without reimplementing how images are accessed
+        img, _ = super().__getitem__(index)
+        #Apply the input transform pipeline to prepare the image for input
+        input_img = self.transform_input(img)
+        #Same idea with the target
+        target_img = self.transform_target(img)
+
+        #Return the transformed input and target images as a tuple to be used during training
+        return input_img, target_img
+    #(Grimoire, 2025), (PyTorch Documentation, n.d. -a)
+
+#The issue we are needing to address is that CIFAR by default can only apply one transform, which would be fine if we were doing classification, but we're doing colorization here and the built-in CIFAR class can't do both. We need to import the dataset directly so that it can be extended to a subclass. We've already imported it before, but now we need full control over it so it needs to be called explicitly. We will creat our own custom version of the dataset and call it CIFAR10Colorization, it still acts like the CIFAR10 dataset, but now we can customize its behavior. We set up our class with arguments for the input and target transforms, which will allow us to preprocess the same image in two different ways, grayscale for the input and RGB for the target. We include *args and **kwargs to accept all the standard CIFAR10 options like root path, train/test flag, and download. Inside the constructor, we call super().init to run the original CIFAR10 setup logic, and we store the transform functions so we can apply them later when we retrieve each sample. Now we have the flexibility to return both the input and target images from a single source image.
+#%%
+#Was getting an error when re-running after shutting down the kernel, had to re-insert this to define the transform_input and transform_target variables before they are used in the next cell to initialize the custom_training_dataset. These transforms apply preprocessing to the CIFAR10 images. Using transform_input converts each image to grayscale and then to a PyTorch tensor, and transform_target leaves the imaage in RGB but also converts it to a tensor. Both are necessary for the model to recieve input and target images in the correct format in the proceeding cells.
+import torchvision.transforms as transforms
+transform_input = transforms.Compose([
+    transforms.Grayscale(num_output_channels=1),
+    transforms.ToTensor()
+])
+transform_target = transforms.Compose([
+    transforms.ToTensor()
+])
+#%%
+#Now we can create our custom training dataset using the CIFAR10Colorization class we just defined.
+
+#Declare custom_training_dataset using the CIFAR10Colorization class to produce grayscale input and RGB target images for colorization training
+custom_training_dataset = CIFAR10Colorization(
+    #Data is in our working directory's data subfolder
+    root="./data",
+    #Use the training split of the dataset instead of the test split
+    train=True,
+    #We're not downloading the data again, it's already in the working directory
+    download=False,
+    #Apply our grayscale/tensor preprocessing to each image before passing to the model
+    transform_input=transform_input,
+    #Same idea for the target data as with the input data
+    transform_target=transform_target
+)
+#(PyTorch Documentation, n.d. -a)
+
+#In this cell we initialize the custom training dataset using the CIFAR10Colorization class we defined above. This allows for separate preprocessing of input and target images. By specifying transform_input and transform_target, we can ensure that each image is converted to a grayscale tensor for the model input, and an RGB tensor for the target output.
+#%%
+#With our custom training dataset defined, we are ready to wrap it in a DataLoader, which will hanle batching, shuffling, and efficient data loading during our training phase
+
+#Declare training_loader variable as a PyTorch DataLoader that will manage iteration over our custom dataset during the training phase
+training_loader = DataLoader(
+    #Use our custom training dataset for the selected dataset
+    dataset=custom_training_dataset,
+    #We've got a decent GPU working here, batch size of 50 should be no problem
+    batch_size=50,
+    #We'll shuffle the data at the start of each epoch to prevent overfitting
+    shuffle=True
+)
+
+#We're ready to use DataLoader now to wrap our custom training dataset previously defined. DataLoader handles batches efficiently for deep learning models. We will process 50 grayscale/color image pairs each iteration which is suitable when working on a CUDA enabled device. By setting shuffle=True, we will randomize the order of the dataset at the start of each epoch to prevent the model from memorizing the order of the samples and reduce the risk of overfitting. Our dataset should be prepared now to be fed into the model's training phase.
+#%%
+#Let's visualize a few examples from our training batch to confirm that each grayscale input is correctly paired with its corresponding RGB target. We can use the same logic that the LLM provided earlier but let's do it ourselves this time.
+
+#Grab a single batch of data from the training loader and unpack it into grayscale input images and RGP target images
+grayscale_batch, color_batch = next(iter(training_loader))
+#(PyTorch Forums, 2018)
+
+#Make a PyPlot with 2 rows for training and target images
+fig, axs = plt.subplots(2, 5, figsize=(12, 5))
+
+#Loop through the first 5 images in the grayscale batch using range(5)
+for i in range(5):
+    #For each image, remove the channel dimension using squeeze(0) to convert shape from 1, H, W to H, W. We're using our GPU so .cpu is not needed. We can use numpy() to convert our PyTorch tensor to a NumPy array same as above
+    image_grayscale = grayscale_batch[i].squeeze(0).numpy()
+    #Display the i-th grayscale image in the top row of the subplot using imshow, keep in mind the images are artificially grayscale because we're using the 'gray' colormap
+    axs[0, i].imshow(image_grayscale, cmap='gray')
+    #Let's turn axis markers on here, just for fun
+    axs[0, i].axis('on')
+    #Display the title as Gray Image {i +1}
+    axs[0, i].set_title(f"Gray Image {i + 1}")
+
+    #Same idea with our RGB targets except that we will need to rearrange the tensor dimensions from (C, H, W) to (H, W, C) using permute() so that matplotlib can display it as a color image (PyTorch Documentation, n.d. -g)
+    image_rgb = color_batch[i].permute(1, 2, 0).numpy()
+    axs[1, i].imshow(image_rgb)
+    axs[1, i].axis('on')
+    axs[1, i].set_title(f"Target Image {i + 1}")
+
+#Output a tight layout PyPlot with our images
+plt.tight_layout()
+plt.show()
+
+#I wanted to visualize our input and target images from our DataLoader before sending them into the model training phase to confirm that each grayscale input is correctly paired with its corresponding RGB target. The output looks good now, but we did catch a snag where the PyTorch vectors were being stored in (C, H, W) format which needed to be permuted to (H, W, C) format using .permute(1, 2, 0) so that matplotlib would output the color images properly.
+#%%
+#We're ready to define our simple CNN using Torch's nn module. The model architechure will consist of two main parts, an encoder and a decoder. The encoder will take a grayscale image with one channel and apply two convolutional layers with ReLU activation functions and max pooling to extract hierarchical features while reducing spatial dimensions. It downsamples the imput from 32 x 32 to 8 x 8 through two convolution + pooling blocks. The decoder will then attempt to reconstruct the image in RGB format by upsampling the featuremaps using transposed convolutional layers. It whould output an RGB image at the original 32 x 32 resolution and apply a sigmoid activation to ensure that the output pixel values are in the range [0, 1] to match the format of the target images. The model is instantiated with model = ColorizationCNN() for later training or inference.
+
+#Here we'll import PyTorch's core neural network library that will provide the tools needed to build our deep learning model. It includes the predefined layers we'll be using such as convolutional, pooling, activation, and fully connected layers, which we can use to construct both the encoder and decoder components of our CNN.
+import torch.nn as nn
+#(PyTorch Documentation, n.d. -c)
+
+#We'll start off by instantiating a class that defines the architecture of our CNN. This will inherit from nn.Module which provides the structures needed to register layers, track parameters, and define our forward pass. By using a class-based approach, our model will be modular, reusable, and compatible with Torch's training utilities like optimizers, loss functions, and our DataLoader setup
+class ColorizationCNN(nn.Module):
+    def __init__(self):
+        #By calling a super here, we make sure that the internal components of the nn.Module base class are properly initialized, allowing our custom model to function within the PyTorch framework. Without it, Torch wouldn't register the models layers or parameters correctly and training would fail, backpropagation wouldn't work, and the model would not be able to update its weights
+        super(ColorizationCNN, self).__init__()
+        #(EITCA Academy, 2024)
+
+        #This is our encoder construction, nn.Sequential is a Torch container module that allows you to stack layers in a specific order and treat them as a single module. It simplifies our model construction by eliminating the need to define and connect each layer using forward(). Rather, the data is automatically passed through each layer in the order listed. Input will flow through the convolution layer, activation function, pooling layer, and then continue through the rest of the stack. Using nn.Sequential() is useful for basic pipelines where no branching or custom logic is needed between layers (PyTorch Forums, 2022.)
+        self.encoder = nn.Sequential(
+            #We start with a 2D convolutional layer with the parameters:
+            #-1 - The number of input channels
+            #-64 - The number of output channels (i.e. filters), the layer will produce 64 feature maps
+            #-kernel_size=3 - The size of the convolutional filter will be 3 x 3 (this is the size of the receptive field that slides over the image
+            #-padding=1 = Adds a 1-pixel border of zeros around the input to ensure that teh spatial dimensions of the output remain the same as the input
+            nn.Conv2d(1, 64, kernel_size=3, padding=1),
+            #(ML and DL Explained, 2025)
+
+            #Next we define a rectified linear unit activation layer. In PyTorch, nn.ReLU applies the ReLU which will output zeros for negative values and return the input unchanged for positive values. It's a non-linear function commonly used in CNNs to introduce non-linearity into the model. Setting inplace=True tells PyTorch to perform the operation directly on the input tensor, modifying it in place to save memory and improve performance by avoiding the need to create a new tensor
+            nn.ReLU(inplace=True),
+            #(GeeksforGeeks, 2022)
+
+            #Next we will send the input through a 2D max pooling layer. This will reduce the spatial dimensions of our feature map by selecting the maximum value within the sliding windows. With a kernel size of 2, the size of the pooling window is 2x2. With a stride of 2, the window moves 2 pixels at a time. With a stride equal to the kernel size, there should be no window overlap. So, for each 2x2 block of pixels in the input feature map, the layer will output the maximum value for that block. This reduces the height and width of the feature map by a factor of 2. It should make the network more translation invariant, reduce computational overhead, and introduce a form of downsampling while retaining the most important features.
+            nn.MaxPool2d(2, 2),
+            #(GeeksforGeeks, 2023)
+
+            #Another convolutional layer is added to the pipeline, this time increasing the number of output channels from 64 to 128. This allows the model to learn a more complex set of features. With a kernel size of 3x3 and padding=1, the spatial dimensions of the feature map are preserves. This deepens our encoder element and improves its ability to capture higher-level abstractions from the input
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+
+            #Another ReLU activation function is applied immediately after the second convolution layer. This reinforces non-linearity in the model and allows it to learn more complex representations. Without a second activation function, the second convolution layer would only be performing a linear transformation, which would limit the model's expressive power. By stacking ReLU after each convolution, non-linear patterns get captured at every stage of the encoder
+            nn.ReLU(inplace=True),
+            #(Tonca, 2021)
+
+            #Another max pooling layer just like before. Following the pattern of convolution -> activation -> pooling progressively compresses the input and amplifies features that are important. We're now down to a very compact spatial resolution with rich feature representations at 128 chanels and 8x8. After two consecutive pooling layers (2, 2), the 32x32 input became 16x16, and now finally 8x8. Each pooling layer at this intensity halves width and height, while the convolutional layers preserve dimensionality due to their padding.
+            nn.MaxPool2d(2, 2),
+
+        #Our encoder took a 32x32 grayscale image and progressively reduced its spatial dimensions while expanding its feature representation. It begins with a 2D convolutional layer that increases the number of channels from 1 to 64, followed by ReLU activation, and then a 2x2 max pooling layer. The process is repeated in the same fashion to add depth to our model. This results in a compact, information rich-feature map suitable for decoding back into color
+        )
+
+        #To reconstruct the original image in color, we'll use a decoder to take a 128-channel 8x8 feature map and gradually upsample it back to its original 32x32 resolution. This is done using transpose convolutional layers, which increase the spatial dimensions while learning to generate meaningful visual detail from the compressed features. As we go, we'll reduce the number of channels from the high-dimensional representation down to 3, which correspond to the RGB output image. The final output can then be directly compared to the ground truth color image during training allowing the model to compute a loss value and use gradient descent to iteratively update its weights. This optimization process teaches the network how to accurately map grayscale input features to realistic RGB color representations over a fixed number of iterations.
+
+        #Define the decoder as a sequential container of layers that will upsample the encoded feature map and generate a 3-channel RGB output image. Like the encoder, this container allows data to flow through each component in order using nn.Sequential() to simplify the model definition when no custom control logic is required
+        self.decoder = nn.Sequential(
+        #(University of Toronto, n.d.)
+
+            #We'll be taking the same steps as our encoder but backwards this time. This means that instead of reducing spatial dimensions and increasing channel depth, we'll instead upsample the feature maps to restore the original 32x32 resolution while decreasing the number of channels back to 3 for RGB output. You'll notice that there are no pooling layers in the decoder because the goal is to reconstruct the image. Transpose convolutions accomplish that job and are learnable, which makes them appropriate for generation tasks like colorization.
+            nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2),
+            #(PyTorch Documentation, n.d. -d)
+
+            #Same ReLU activation as before
+            nn.ReLU(inplace=True),
+            #Next convolutional layer, same as before except now we're inputting 64 channels and outputting 32
+            nn.ConvTranspose2d(64, 32, kernel_size=2, stride=2),
+            #Next ReLU activation, same as before
+            nn.ReLU(inplace=True),
+            #Next convolutional layer except this time we aren't using transposed convolution and the parameters are 32 input feature channels, outputting 3 output channels (RGB), using a 3x3 kernel with padding set to 1 to maintain spatial dimensions to allow the decoder to output a full reslolution color image to match our grayscale input
+            nn.Conv2d(32, 3, kernel_size=3, padding=1),
+
+            #Final activation layer applies a sigmoid function element-wise to the output tensor, compressing each value to the range [0, 1.] This is important for generative tasks where pixel intensities are normalized using a loss function like Mean Squarred Error (see next cell) or L1 (see cell after some adjustments are made) that expects predictions in the same scale as their target images. Unlike ReLU, sigmoid maintains gradient flow for both positive and negative inputs, though it's vulnerable to the vanishing gradient problem at the extremes. In this context, however, it ensures our model outputs a valid RGB pixel value that can be visualized or compared directly to the normalized ground truth images
+            nn.Sigmoid()
+            #(PyTorch Documentation, n.d. -e)
+        )
+
+    #Here we'll define the model's forward pass setup. When an input tensor (x) is passed in, it's first processed by the encoder, which extracts compressed features through convolution, activation, and pooling layers. The output from the encoder is then passed to the decoder, which upsamples and transforms the feature representation back into an RGB image using transposed convolutions and non-linear activations. The reconstructed image is returned as the model's output, ready to be compared to the ground truth during training, or used directly during inference
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.decoder(x)
+        return x
+
+#Finally, we can instantiate the model
+model = ColorizationCNN()
+
+#This CNN uses a convolutional encoder/decoder architecture, which is different from a traditional autoencoder in that it does not attempt to reproduce the exact same input. Instead of learning to reconstruct a grayscal image from itself, the model learns to map a single-channel grayscale input into a three-channel RGB output. While the structure still includes a downsampling encoder and an upsampling decoder, the task is transformation rather than replication. This makes the architecture more appropriately described as a conditional encoder-decoder network, where the output is conditional of the input, but belongs to a different representation space.
+#%%
+#Before we start training we'll need to define our optimization setup. This includes choosing a loss function to evaluate model performance, and select an optimizer to updates the model's weights during backpropagation.
+
+#Imports Torch's optimization module to give us access ot optimizers like Adam, SGD, and others used to update weights during training
+import torch.optim as optim
+
+#We've already done the CUDA GPU check in cell 1, however since we've created a new instance of our model (which by default works on the CPU) we'll need to explicitly move it to our GPU to avoid runtime errors when training starts in the next cell down
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+#Our GPU in this case, but the model should run (slowly) on a CPU if you're running this without an NVIDIA card
+model.to(device)
+
+#It's time to select a loss function, let's start out with Mean Squarred Error. We'll declare the variable loss_function and use it to compute the average squarred difference between the model's predicted RGB output and the ground truth during training. MSE is an appropriate loss function to begin expirementing with because it penalizes large errors more heavily and produces smooth gradients during training
+loss_function = nn.MSELoss()
+
+#Adam optimizer is my go-to default because it adapts the learning rate for each parameter individually. It combines the benefits of AdaGrad and RMSProp and tends to converge faster and more reliably for learning tasks in my (limited) experience. I assume it would be good for image colorization because it handles sparse gradients well, adjusts effectively to different parameter scaling, and typically requires less tuning, which will be helpful when working with pixel-wise losses and deep convolutional sturctures. Available parameters here can get quite sophisticated, but we'll keep it simple for now, setting the learning rate to 0.001 and leaving more advanced settings like betas, eps, weight_decay, and amsgrad set to their default settings.
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+#(Yadav, 2023)
+
+#%%
+#Let's run training for a single epoch to see how the training loop works
+num_epochs = 1
+#Best practice here is to put the model in training mode, although this call doesn't really change behavior the way things are set up now, if we were to add dropout or batch normalization layers later it would be useful to ensure those layers behave correctly when we switch to inference mode later (model.eval())
+model.train()
+
+#Main training loop. We'll iterate over the dataset for n epochs. Each epoch reporesents one complete pass through the training data and allows the model to incrementally adjust its weights through multiple rounds of learning.
+for epoch in range(num_epochs):
+
+    #Declare the variable running_loss to accumulate the total loss across all batches in the current epoch. At the end of each epoch, we'll use it to calculate the average loss (MSE for now) providing a single summary statistic of model performance for that epoch
+    running_loss = 0.0
+
+    #Inner training loop iterates over each mini-batch of data in training_loader. For each batch, moves the input grayscale images and their corresponding target RGB images to the selected device (GPU in this case) to ensure consistency during model training
+    for inputs, targets in training_loader:
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+
+        #Since gradients accumulate by default, if we don't zero them out at the start of each training step, the new gradients will be added to the previous ones, leading to incorrect parameter updates and unstable training. Calling optimizer.zero_grad() ensures each backward pass starts fresh
+        optimizer.zero_grad()
+        #(PyTorch Documentation, n.d. -m)
+
+        #Performs the forward pass by feeding the current batch of grayscale input images into the model. The encoder extracts compressed feature representations, and the decoder reconstructs them into predicted RGB outputs
+        outputs = model(inputs)
+
+        #Computes the loss for the current batch by comparint the model's predicted RGB outputs to the ground truth target images using the previously defined MSE loss function
+        loss = loss_function(outputs, targets)
+
+        #This is the backpropagation step that computes the gradients of the loss with respect to each learnable parameter in the model. These gradients are stored and will be used by the optimizer to update the weights in the next step
+        loss.backward()
+
+        #Updates the model's parameters using the gradients computed in the backward pass. This step adjusts the weights in the direction that minimizes the loss, completing one optimization cycle for the current batch
+        optimizer.step()
+
+        #Adds the scalar loss value for the current batch to the running_loss accumulator. Calling .item() extracts the float value from the loss tensor so that it can be summed and then averaged across all batches in the epoch
+        running_loss += loss.item()
+
+    #Now we can calculate the average loss for the entire epoch by dividing the total accumulated loss by the number of batches in training_loader
+    avg_loss = running_loss / len(training_loader)
+
+    #Print the average loss for the current epoch formatted to 4 decimal places. This provides the user with real-time feedback on training, and will allow us to see if our model starts to plateau or if further epochs continue to improve performance
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+#This cell is the backbone of the model's learning process. It defines the full training loop, where the convolutional encoder/decoder network learns to map grayscale images to their corresponding RGB counterparts. Starting with the setup of a single epoch, it puts the model into training mode to ensure any future training-sensitive layers behave appropriately. The loop then iterates through mini-batches of the training data, transferring inputs and targets to the selected compute device. Each iteration performs a full training cycle. Clearing gradients, forward pass to generate predictions, calculate MSE loss, perform backpropagation to compute gradients, and finally applying those gradients to update model weights via Adam optimizer. The running_loss variable tracks the total loss across all batches, enabling the computation of an average loss that gives a performance snapshot of the epoch. The feedback loop is what enables deep learning. It allows for iterative improvement by adjusting weights in a direction that minimizes loss, and provides visibility into our training pipeline such as convergence, improvement, or stagnation.
+#%%
+#Evaluation time, how did colorization work out after a single training cycle
+
+#We'll put the model into evaluation mode here. At this point, nothing functionally changes becaues we aren't using dropout or batch normalization. Still, it's a best practice to make sure our model is compatible with any desired future additions.
+model.eval()
+
+#We'll disable gradient tracking for the evaluation phase. This will save us memory usage and speed up processing time since we don't care about gradients at this stage. We're only running inference and visualizing the models predictions here.
+with torch.no_grad():
+#(ApX Machine Learning, n.d.)
+
+    #Pulls a single batch of grayscale input images and their corresponding RGB target images from the training DataLoader using Python's next() and iter() functions. This is a good way to preview the model's output on a representative sample from the training set
+    inputs, targets = next(iter(training_loader))
+    #(Kurama, 2025)
+
+    #Moves that batch of grascale input images to the same device as the model, but this causes problems with matplotlib
+    inputs = inputs.to(device)
+
+    #Since tensors on GPU memory can't be visualized directly with matplotlib, they must be moved back to the CPU before plotting
+    preds = model(inputs).cpu()
+    inputs = inputs.cpu()
+    targets = targets.cpu()
+
+#Let's use the LLM again (Grimoire, 2025) to display a PyPlot of input, predicted, and ground truth images for visual evaluation after a single training epoch.
+import matplotlib.pyplot as plt
+
+fig, axs = plt.subplots(3, 5, figsize=(12, 7))
+for i in range(5):
+    axs[0, i].imshow(inputs[i].squeeze(0), cmap='gray')
+    axs[0, i].set_title("Input")
+    axs[0, i].axis('off')
+
+    axs[1, i].imshow(preds[i].permute(1, 2, 0))
+    axs[1, i].set_title("Predicted")
+    axs[1, i].axis('off')
+
+    axs[2, i].imshow(targets[i].permute(1, 2, 0))
+    axs[2, i].set_title("Ground Truth")
+    axs[2, i].axis('off')
+
+plt.tight_layout()
+plt.show()
+#(Grimoire, 2025)
+
+#After just a single epoch of training, the model is demonstrating that the colorization pipeline is functioning end-to-end. Grayscale images are passed through the convolutional encoder to extract compressed feature representations, which are then decoded into predicted RGB outputs. Although the predictions here are generally muted and lacking sharp color detail, there is clear structural alignment with the target images, which suggests that the network is beginning to associate spatial features with color patterns. This output confirms that the data is flowing properly through the architecture, gradients are being computed and applied, and the loss function is guiding updates in the right direction. With only one training cycle, the model hasn't had enough time to learn complex color relationships or high frequency textures. Over many epochs, however, we would expect to see sharper, more vibrant predictions as the network iteratively refines its understanding of how grayscale cues map to natural colors.
+#%%
+#Let's see how we do after 25 epochs of training. We'll start by extending training to 25 epochs to give the model more opportunities to refine its understanding of the grayscale-to-color mapping. Training logic is identical to the previous loop.
+
+num_epochs = 25
+model.train()
+
+for epoch in range(num_epochs):
+    running_loss = 0.0
+    for inputs, targets in training_loader:
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = loss_function(outputs, targets)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+    avg_loss = running_loss / len(training_loader)
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+#The average loss values across epochs show a steady downward trend, which confirms that the model is learning and the training loop is functioning properly. With the largest improvements occurring early (pretty typical in gradient-based learning models), the sustained decline over time suggests that the model continues to refine its ability to predict RGB outputs from grayscale inputs. The model starts to plateau in later epochs, and suggests that the model is approaching convergence under the current configuration. With additional training, hyperparameter tuning, or architectural adjustments, ew might continue to reduce the loss, or this might be as good as it gets. Overall, this curve validates that the pipeline is successfully minimizing loss over time. I think the next step to try to improve performance is probably to add another convolution layer in the decoder followed by an additional ReLU layer before our sigmoid block. We'll do a visualization and then implement some small changes.
+#%%
+#Same visualization setup as before (Grimoire, 2025) in matplotlib's PyPlot
+model.eval()
+
+with torch.no_grad():
+    inputs, targets = next(iter(training_loader))
+    inputs = inputs.to(device)
+    preds = model(inputs).cpu()
+    inputs = inputs.cpu()
+    targets = targets.cpu()
+
+import matplotlib.pyplot as plt
+
+fig, axs = plt.subplots(3, 5, figsize=(12, 7))
+for i in range(5):
+    axs[0, i].imshow(inputs[i].squeeze(0), cmap='gray')
+    axs[0, i].set_title("Input")
+    axs[0, i].axis('off')
+
+    axs[1, i].imshow(preds[i].permute(1, 2, 0))
+    axs[1, i].set_title("Predicted")
+    axs[1, i].axis('off')
+
+    axs[2, i].imshow(targets[i].permute(1, 2, 0))
+    axs[2, i].set_title("Ground Truth")
+    axs[2, i].axis('off')
+
+plt.tight_layout()
+plt.show()
+#(Grimoire, 2025)
+
+#After 25 training cycles with the original model architecture, the improvements in both quantitative loss and visual output are clear. The average loss declined from 0.0091 in epoch 1 to 0.0062 by epoch 25, with a consistent reduction in loss over the epochs. Visually, the predictions now appear noticeably more colorful and defined compared to those produced after a single epoch. The model has learned to associate grayscale intensity patterns with plausible color distributions across a variety of image types. While some output colors still appear muted or incorrect, structural alignment and tone accuracy have improved drastically. These gains show that even a basic encoder/decoder architecture, when trained over multiple epochs, is capable of learning meaningful grayscale to color mappings. Let's give an additional decoder cycle and see if there's any improvement
+#%%
+class ColorizationCNN(nn.Module):
+    def __init__(self):
+        super(ColorizationCNN, self).__init__()
+
+        # Encoder
+        self.encoder = nn.Sequential(
+            nn.Conv2d(1, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),
+
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),
+        )
+
+        # Decoder (with additional refinement block)
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2),
+            nn.ReLU(inplace=True),
+
+            nn.ConvTranspose2d(64, 32, kernel_size=2, stride=2),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+
+            #Let's see what an additional refinement block in our decoder can do. We're preserving the 32 channel, 32x32 feature map size, we're not doing any additional upsampling like the previous ConvTranspose2d() layers. Just an extra convolutional layer followed by a ReLU activation to give the model a chance to further polish the already upsampled features.
+            nn.Conv2d(32, 3, kernel_size=3, padding=1),
+            #An interesting article by Yang et al. (2024) seems to suggest that decoder design plays an important role in improving reconstruction quality in high-resolution tasks like medical image segmentation. Their findings support the idea that additional convolutional refinement blocks, even without further upsampling, can help sharpen output, reduce spatial artifacts, and improve structural detail by allowing the model to iteratively refine its predictions at a fixed resolution. Let's see if this carries over to our low-resolution 32x32 refinement block in the decoder, as it might give the network more opportunity to clean up the output before the final activation
+
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.decoder(x)
+        return x
+
+
+model = ColorizationCNN().to(device)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+#%%
+#Same as before, train for 25 epochs with the additional refinement layer, no other changes
+num_epochs = 25
+model.train()
+
+for epoch in range(num_epochs):
+    running_loss = 0.0
+    for inputs, targets in training_loader:
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = loss_function(outputs, targets)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+    avg_loss = running_loss / len(training_loader)
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+#After incorporating the additional refinement block in the decoder, we achieved only slightly improved performance as reflected in the training loss values. Although initial loss started higher at 0.0122 (likely due to weight reinitialization), the model quickly recovered and converged to a lower final loss of 0.0061 by epoch 25. This is a slight improvement over the original model's final loss of 0.0063. Let's visualize the colorization again and then go a different way for improvement.
+#%%
+#Same visualization as before, (Grimoire, 2025) with the matplotlib code
+
+model.eval()
+
+with torch.no_grad():
+    inputs, targets = next(iter(training_loader))
+    inputs = inputs.to(device)
+    preds = model(inputs).cpu()
+    inputs = inputs.cpu()
+    targets = targets.cpu()
+
+import matplotlib.pyplot as plt
+
+fig, axs = plt.subplots(3, 5, figsize=(12, 7))
+for i in range(5):
+    axs[0, i].imshow(inputs[i].squeeze(0), cmap='gray')
+    axs[0, i].set_title("Input")
+    axs[0, i].axis('off')
+
+    axs[1, i].imshow(preds[i].permute(1, 2, 0))
+    axs[1, i].set_title("Predicted")
+    axs[1, i].axis('off')
+
+    axs[2, i].imshow(targets[i].permute(1, 2, 0))
+    axs[2, i].set_title("Ground Truth")
+    axs[2, i].axis('off')
+
+plt.tight_layout()
+plt.show()
+#(Grimoire, 2025)
+
+#The visual results after training with the added decoder refinement block are visually about the same as before. I don't expect that the human eye would pick up on a difference in loss difference of 0.0002. The improvements are too small to manifest as clearly sharper or more vibrant colorization. While the extra layer may have helped to stabilize output or reduce artifacting, it didn't produce a meaningful change in perceptual quality. Perhaps we should change something else to try for better performance.
+#%%
+#Switching from MSE to L1 loss (Mean Absolute Error) might make sense to improve performance as L1 loss penalizes large and small errors more uniformly. Unlike MSE, which emphasizes large errors due to squaring, L1 encourages smoother gradients and is less sensitive to outliers. We might expect sharper or more visually coherent predictions in our model, where preserving edge detail and avoiding blur are important. Given that we're working with 32x32 pixel images, substantial blur is unavoidable, but let's see what happens when we use an L1 loss function instead of MSE
+
+#Easy to change loss function
+loss_function = nn.L1Loss()
+
+#%%
+#Reinitialize model and optimizer
+model = ColorizationCNN().to(device)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+num_epochs = 25
+model.train()
+
+for epoch in range(num_epochs):
+    running_loss = 0.0
+    for inputs, targets in training_loader:
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = loss_function(outputs, targets)  # using L1Loss now
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+    avg_loss = running_loss / len(training_loader)
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+#When comparing MSE and L1 (Mean Absolute Error) performance, the results point to MSE being the more effective loss function in this setting. Although L1 loss started at a much higher value of 0.0781 compared to MSE's starting value of 0.0122, this is to be expected because L1 measures the absolute differences directly, while MSE squares them, compressing small errors and exaggerating large ones. The difference liese in the rate and consistency of improvement. MSE loss steadily decreased by about 50% over 25 epochs going from 0.0122 to 0.0061, whereas L1 only dropped by about 33%, plateauing around 0.0519. This suggests that MSE provided larger, more consistent gradients early on which accelerated learning. I think it might be worthwhile to expirement with a more aggressive LR using L1 early on, but using a learning rate scheduler to gradually reduce LR as training progresses. This might give the model the initial push needed to begin converging before stabilizing fine-grained improvements. Let's run a visualization and then expirement with an LR scheduler next
+#%%
+#Same visualization as before, (Grimoire, 2025) with the matplotlib code
+model.eval()
+
+with torch.no_grad():
+    inputs, targets = next(iter(training_loader))
+    inputs = inputs.to(device)
+    preds = model(inputs).cpu()
+    inputs = inputs.cpu()
+    targets = targets.cpu()
+
+import matplotlib.pyplot as plt
+
+fig, axs = plt.subplots(3, 5, figsize=(12, 7))
+for i in range(5):
+    axs[0, i].imshow(inputs[i].squeeze(0), cmap='gray')
+    axs[0, i].set_title("Input")
+    axs[0, i].axis('off')
+
+    axs[1, i].imshow(preds[i].permute(1, 2, 0))
+    axs[1, i].set_title("Predicted")
+    axs[1, i].axis('off')
+
+    axs[2, i].imshow(targets[i].permute(1, 2, 0))
+    axs[2, i].set_title("Ground Truth")
+    axs[2, i].axis('off')
+
+plt.tight_layout()
+plt.show()
+#(Grimoire, 2025)
+
+#Visual results using a fixed LR and L1 loss show that the model is capturing general structure and basic object boundries, but colorization still lacks fidelity. The output colors are desaturated and tend toward brown/gray hues. This suggests underfitting or a lack of expressivity in the network. While shapes and shadows align well, hue and saturation are still underfitted. For our LR scheduling we can either go with a fixed rate per number of epochs, or go with a lower-on-plateau strategy. Let's see what a more aggressive LR early on followed by scheduled decreases in LR can do.
+#%%
+#Let's go with a fixed interval LR scheduler for now and see what happens. The StepLR scheduler reduces the LR by a factor of (gamma) every (step_size) epochs, helping to balance rapid learning early with slower stable training later
+from torch.optim.lr_scheduler import StepLR
+#(PyTorch Documentation, n.d. -f)
+
+#Re-initialize model
+model = ColorizationCNN().to(device)
+
+#Re-initialize optimizer with a higher, more aggressive starting learning rate for better gradient steps
+optimizer = optim.Adam(model.parameters(), lr=0.010)
+
+#Create scheduler that decays LR by (gamma) every (step_size) epochs
+scheduler = StepLR(optimizer, step_size=5, gamma=0.5)
+
+num_epochs = 25
+model.train()
+
+for epoch in range(num_epochs):
+    running_loss = 0.0
+
+    for inputs, targets in training_loader:
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = loss_function(outputs, targets)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+
+    scheduler.step()
+
+    avg_loss = running_loss / len(training_loader)
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+#Even with a fairly agressive initial learning rate, the consistent, gradual reduction in L1 across epochs suggests that the learning pipeline is functioning correctly and the loss function itself is not the primary bottleneck. Starting from a higher initial loss of 0.0729 the model was able to reduce it to 0.0543 over 25 epochs using L1 loss function. This represents aproximately a 25% reduction in lost, which is significantly worse that our ~50% reduction when using MSE. The results imply that while the model is learning, the simple encoder/decoder architecture may lack the capacity to make full use of L1 loss functions, likely due to the low resolution 32x32 images.
+#%%
+#ApX Machine Learning. (n.d.). Disable PyTorch Gradients torch.no_grad(). ApX Machine Learning.
+#https://apxml.com/courses/getting-started-with-pytorch/chapter-3-automatic-differentiation-autograd/disabling-gradient-tracking
+
+#EITCA Academy. (2024, June 14). What is the role of the super().init() command in PyTorch?. ETICA Academy.
+#https://eitca.org/artificial-intelligence/eitc-ai-dlpp-deep-learning-with-python-and-pytorch/data-eitc-ai-dlpp-deep-learning-with-python-and-pytorch/datasets/what-is-the-role-of-the-super-__init__-command-in-pytorch/
+
+#GeeksforGeeks. (2022, June 2). How to apply Rectified Linear Unit function element-wise in PyTorch? GeeksforGeeks.
+#https://www.geeksforgeeks.org/how-to-apply-rectified-linear-unit-function-element-wise-in-pytorch/
+
+#GeeksforGeeks. (2023, August 29). Apply a 2D Max Pooling in PyTorch. GeeksforGeeks.
+#https://www.geeksforgeeks.org/apply-a-2d-max-pooling-in-pytorch/
+
+#GeeksforGeeks. (2024, May 13). How to load CIFAR10 dataset in PyTorch? GeeksforGeeks.
+#https://www.geeksforgeeks.org/how-to-load-cifar10-dataset-in-pytorch/
+
+#GeeksforGeeks. (2025). Apply a 2D transposed convolution operation in PyTorch. GeeksforGeeks.
+#https://www.geeksforgeeks.org/apply-a-2d-transposed-convolution-operation-in-pytorch/
+
+#Grimoire. (2025). Chat about generating a pyplot for colorization project. OpenAI.
+#https://chat.openai.com/
+
+#Kurama, V., & Mukherjee, S. (2025, April 22). A guide to the DataLoader class and abstractions in PyTorch. DigitalOcean.
+#https://www.digitalocean.com/community/tutorials/dataloaders-abstractions-pytorch
+
+#ML and DL Explained. (2025, February 9). Understanding 2D convolutions in PyTorch. Medium.
+#https://medium.com/@ml_dl_explained/understanding-2d-convolutions-in-pytorch-b35841149f5f
+
+#NVIDIA Developer Forums. (2024, May 2). CUDA not detected in PyTorch. NVIDIA
+##https://forums.developer.nvidia.com/t/cuda-not-detected-in-pytorch-unable-to-use-gpu-for-yolo-training/316244
+
+#PyTorch Documentation. (n.d. -a). Data loading and processing tutorial.
+#https://docs.pytorch.org/tutorials/beginner/data_loading_tutorial.html
+
+#PyTorch Documentation. (n.d. -b). Loading data in PyTorch. PyTorch.
+#https://docs.pytorch.org/tutorials/beginner/basics/data_tutorial.html
+
+#PyTorch Documentation. (n.d. -c). torch.nn — Neural networks. PyTorch.
+#https://pytorch.org/docs/stable/nn.html
+
+#PyTorch Documentation. (n.d. -d). torch.nn.ConvTranspose2d. PyTorch Documentation.
+#https://pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html
+
+#PyTorch Documentation. (n.d. -e). torch.nn.Sigmoid. PyTorch Documentation.
+#https://pytorch.org/docs/stable/generated/torch.nn.Sigmoid.html
+
+#PyTorch Documentation. (n.d. -f). torch.optim.lr_scheduler.StepLR. PyTorch.
+#https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.StepLR.html
+
+#PyTorch Documentation. (n.d. -g). torch.permute. Pytorch.
+#https://docs.pytorch.org/docs/stable/generated/torch.permute.html
+
+#PyTorch Documentation. (n.d. -h). torch.utils.data — PyTorch 2.7 documentation. PyTorch
+##https://pytorch.org/docs/stable/data.html
+
+#PyTorch Documentation. (n.d. -i). Torchvision datasets. PyTorch.
+#https://docs.pytorch.org/vision/main/datasets.html
+
+#PyTorch Documentation. (n.d. -j). torchvision.datasets.CIFAR10. PyTorch.
+#https://docs.pytorch.org/vision/main/generated/torchvision.datasets.CIFAR10.html
+
+#PyTorch Documentation. (n.d. -k). torchvision.transforms.Grayscale. PyTorch.
+#https://docs.pytorch.org/vision/stable/generated/torchvision.transforms.Grayscale.html
+
+#PyTorch Documentation. (n.d. -l). torchvision.transforms.ToTensor. PyTorch.
+#https://docs.pytorch.org/vision/main/generated/torchvision.transforms.ToTensor.html
+
+#PyTorch Documentation. (n.d. -m). Zeroing out gradients. PyTorch Documentation.
+#https://docs.pytorch.org/tutorials/recipes/recipes/zeroing_out_gradients.html
+
+#PyTorch Forums. (2018, August 7). Iterating through a DataLoader object [Online forum post]. PyTorch. Retrieved June 8, 2025, from
+#https://discuss.pytorch.org/t/iterating-through-a-dataloader-object/25437
+
+#PyTorch Forums. (2022, May 11). Wrapping submodules in Sequential [Online forum post]. PyTorch. Retrieved June 8, 2025, from
+#https://discuss.pytorch.org/t/wrapping-submodules-in-sequential/151700
+
+#Tonca. (2018, August 21). Why we use activation function after convolution layer in Convolution Neural Network? Stack Exchange. Retrieved June 8, 2025, from
+#https://stats.stackexchange.com/questions/363190/why-we-use-activation-function-after-convolution-layer-in-convolution-neural-net
+
+#University of Toronto. (n.d.). Autoencoders. University of Toronto.
+#https://www.cs.toronto.edu/~lczhang/360/lec/w05/autoencoder.html
+
+#Yadav, A. (2023, July 12). Taming the optimizers: AdaGrad, Adam, and RMSprop in deep learning. Medium.
+#https://medium.com/@alok.yadav/taming-the-optimizers-adagrad-adam-and-rmsprop-in-deep-learning-7b0582b0ceba
+
+#Yang, W., Dong, Z., Xu, M., Xu, L., Geng, D., Li, Y., & Wang, P. (2024). Optimizing medical image segmentation with advanced decoder design (arXiv:2410.04128v1). arXiv.
+#https://arxiv.org/abs/2410.04128v1
