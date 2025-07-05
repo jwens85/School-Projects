@@ -64,7 +64,7 @@ extern "C" void launchVectorAdd(const int* a, const int* b, int* c, int N) {
 //         For n = 1000, threadsPerBlock = 256,
 //         blocksPerGrid = ceil(1000 / 256) = 4
 //
-// - CUDA will launch blocks * threads threads to handle all elements in parallel.
+// - CUDA will launch (blocksPerGrid × threadsPerBlock) total threads to cover all elements of the input arrays in parallel.
 //
 // --------------------------------------------------------------------------------------------------
 // Synchronization
