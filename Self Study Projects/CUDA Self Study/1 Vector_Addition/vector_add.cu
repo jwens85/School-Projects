@@ -1,6 +1,6 @@
-#include <cuda_runtime.h>
-
 // CUDA kernel for element-wise vector addition
+
+#include <cuda_runtime.h>
 __global__ void vectorAdd(const int* a, const int* b, int* c, int N) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     if (i < N) {
