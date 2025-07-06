@@ -1,1 +1,1 @@
-*.cu linguist-language=C++
+*.cu linguist-language=Cuda
