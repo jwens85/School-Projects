@@ -3,4 +3,5 @@ project(CUDA_Self_Study LANGUAGES C CXX CUDA)
 
 add_subdirectory("0 Proof of Concept")
 add_subdirectory("1 Vector_Addition")
+add_subdirectory("2 Parallel_Histogram")
 # Add more as needed
