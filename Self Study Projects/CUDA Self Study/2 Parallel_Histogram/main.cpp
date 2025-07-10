@@ -7,7 +7,8 @@
 #include <vector>
 #include <string>
 
-void compute_histogram_gpu(const std::vector<int>& pixels, std::vector<int>& histogram);
+// Corrected: Add extern "C" to match the definition in .cu
+extern "C" void compute_histogram_gpu(const int* pixels, int num_pixels, int* histogram);
 
 std::vector<int> read_pixel_data(const std::string& filename, int max_rows = 1000) {
     std::vector<int> pixels;
@@ -54,7 +55,8 @@ int main() {
 
     std::vector<int> histogram(256, 0);  // 256 grayscale bins
 
-    compute_histogram_gpu(pixel_values, histogram);
+    // Match pointer interface
+    compute_histogram_gpu(pixel_values.data(), pixel_values.size(), histogram.data());
 
     std::cout << "Histogram result (first 10 bins):" << std::endl;
     for (int i = 0; i < 10; ++i) {
