@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Load CSV
-df = pd.read_csv("sleep_sessions.csv", parse_dates=["STARTTIME", "ENDTIME"])
+df = pd.read_csv("data/sleep_sessions.csv", parse_dates=["STARTTIME", "ENDTIME"])
 df = df.sort_values("STARTTIME")  # ensure chronological order
 
 # --- 1. Sleep Quality Over Time ---
