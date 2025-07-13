@@ -1,0 +1,6 @@
+Python: Python 3.10.12
+TensorFlow: 2.19.0
+Keras: 3.10.0
+CUDA: Cuda compilation tools, release 12.4, V12.4.99
+cuDNN: (version query not available in this TensorFlow build)
+OS: Linux DAISY 6.8.0-60-generic #63~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Apr 22 19:00:15 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
