@@ -21,7 +21,7 @@ os.makedirs(base_output_dir, exist_ok=True)
 
 # Load CIFAR-10 data and select ship class (class 8) instead of airplanes
 (X, y), (_, _) = cifar10.load_data()
-X = X[y.flatten() == 8]  # Select ship images (same as assignment example)
+X = X[y.flatten() == 8]  # Select ship images instead of airplanes
 print(f"Loaded {len(X)} ship images")
 
 # Define generator following assignment structure
