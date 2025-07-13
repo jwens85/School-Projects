@@ -107,7 +107,7 @@ def display_images(generator, epoch):
     plt.suptitle(f'Generated Airplane Images - Epoch {epoch}')
     plt.tight_layout()
     
-    # Save the figure
+    # Save the figure as a 4x4 grid
     filename = f"epoch_{epoch}_grid.png"
     filepath = os.path.join(base_output_dir, filename)
     plt.savefig(filepath, bbox_inches='tight', dpi=100)
