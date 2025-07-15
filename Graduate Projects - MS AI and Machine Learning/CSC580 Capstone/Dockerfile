@@ -8,9 +8,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install --upgrade pip
 
-# Optional: install additional Python packages your project needs
-# Example:
-# RUN pip install matplotlib pandas scikit-learn
+RUN pip install matplotlib pandas scikit-learn
 
 WORKDIR /opt/project
 
