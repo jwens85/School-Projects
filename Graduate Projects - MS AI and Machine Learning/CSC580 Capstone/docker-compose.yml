@@ -1,0 +1,11 @@
+services:
+  tf:
+    image: nvcr.io/nvidia/tensorflow:24.02-tf2-py3
+    container_name: csc580capstone-tf
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - .:/opt/project
+    working_dir: /opt/project
+    command: python Docker_Test.py
