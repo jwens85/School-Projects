@@ -1,0 +1,350 @@
+[
+  {
+    "name": "Leon Brillouin",
+    "confidence": 0.583732295674575,
+    "location": [
+      853,
+      2674,
+      942,
+      2584
+    ],
+    "face_number": 1,
+    "best_match_index": 4
+  },
+  {
+    "name": "Wolfgang Pauli",
+    "confidence": 0.5915432002985934,
+    "location": [
+      863,
+      2166,
+      952,
+      2076
+    ],
+    "face_number": 2,
+    "best_match_index": 41
+  },
+  {
+    "name": "Hendrik Anthony Kramers",
+    "confidence": 0.5584786535752724,
+    "location": [
+      1047,
+      1142,
+      1155,
+      1035
+    ],
+    "face_number": 3,
+    "best_match_index": 1
+  },
+  {
+    "name": "Unknown",
+    "confidence": 0.0,
+    "location": [
+      1052,
+      225,
+      1141,
+      135
+    ],
+    "face_number": 4,
+    "best_match_index": -1
+  },
+  {
+    "name": "Owen Richardson",
+    "confidence": 0.5434821474237184,
+    "location": [
+      1191,
+      2779,
+      1298,
+      2671
+    ],
+    "face_number": 5,
+    "best_match_index": 29
+  },
+  {
+    "name": "Louis de Broglie",
+    "confidence": 0.514384654097058,
+    "location": [
+      1072,
+      2037,
+      1161,
+      1947
+    ],
+    "face_number": 6,
+    "best_match_index": 33
+  },
+  {
+    "name": "Hendrik Lorentz",
+    "confidence": 0.5459007285243964,
+    "location": [
+      1167,
+      1286,
+      1274,
+      1178
+    ],
+    "face_number": 7,
+    "best_match_index": 38
+  },
+  {
+    "name": "Unknown",
+    "confidence": 0.0,
+    "location": [
+      763,
+      2534,
+      853,
+      2445
+    ],
+    "face_number": 8,
+    "best_match_index": -1
+  },
+  {
+    "name": "Max Born",
+    "confidence": 0.5371139087054653,
+    "location": [
+      1071,
+      2373,
+      1179,
+      2265
+    ],
+    "face_number": 9,
+    "best_match_index": 11
+  },
+  {
+    "name": "Niels Bohr",
+    "confidence": 0.5540240286387548,
+    "location": [
+      1083,
+      2671,
+      1191,
+      2564
+    ],
+    "face_number": 10,
+    "best_match_index": 30
+  },
+  {
+    "name": "Albert Einstein",
+    "confidence": 0.5452885230401179,
+    "location": [
+      1151,
+      1678,
+      1241,
+      1589
+    ],
+    "face_number": 11,
+    "best_match_index": 16
+  },
+  {
+    "name": "Emile Henriot",
+    "confidence": 0.794057213285385,
+    "location": [
+      851,
+      768,
+      926,
+      693
+    ],
+    "face_number": 12,
+    "best_match_index": 21
+  },
+  {
+    "name": "Charles Wilson",
+    "confidence": 0.526176173300051,
+    "location": [
+      1171,
+      2534,
+      1261,
+      2445
+    ],
+    "face_number": 13,
+    "best_match_index": 37
+  },
+  {
+    "name": "Marie Curie",
+    "confidence": 0.6189843658066673,
+    "location": [
+      1161,
+      942,
+      1251,
+      852
+    ],
+    "face_number": 14,
+    "best_match_index": 17
+  },
+  {
+    "name": "Unknown",
+    "confidence": 0.0,
+    "location": [
+      1062,
+      802,
+      1151,
+      713
+    ],
+    "face_number": 15,
+    "best_match_index": -1
+  },
+  {
+    "name": "Paul Ehrenfest",
+    "confidence": 0.507226879923023,
+    "location": [
+      902,
+      922,
+      992,
+      832
+    ],
+    "face_number": 16,
+    "best_match_index": 25
+  },
+  {
+    "name": "Unknown",
+    "confidence": 0.0,
+    "location": [
+      1151,
+      325,
+      1241,
+      235
+    ],
+    "face_number": 17,
+    "best_match_index": -1
+  },
+  {
+    "name": "Erwin Schrodinger",
+    "confidence": 0.5043069311688724,
+    "location": [
+      853,
+      1668,
+      942,
+      1579
+    ],
+    "face_number": 18,
+    "best_match_index": 34
+  },
+  {
+    "name": "Unknown",
+    "confidence": 0.0,
+    "location": [
+      1143,
+      2205,
+      1250,
+      2098
+    ],
+    "face_number": 19,
+    "best_match_index": -1
+  },
+  {
+    "name": "Paul Dirac",
+    "confidence": 0.4888165940156868,
+    "location": [
+      1042,
+      1489,
+      1117,
+      1415
+    ],
+    "face_number": 20,
+    "best_match_index": 27
+  },
+  {
+    "name": "Martin Knudsen",
+    "confidence": 0.5007422400277921,
+    "location": [
+      1091,
+      504,
+      1181,
+      414
+    ],
+    "face_number": 21,
+    "best_match_index": 40
+  },
+  {
+    "name": "Max Planck",
+    "confidence": 0.6999862682643929,
+    "location": [
+      1171,
+      633,
+      1261,
+      544
+    ],
+    "face_number": 22,
+    "best_match_index": 5
+  },
+  {
+    "name": "Arthur Compton",
+    "confidence": 0.6065930675850355,
+    "location": [
+      1052,
+      1758,
+      1141,
+      1668
+    ],
+    "face_number": 23,
+    "best_match_index": 3
+  },
+  {
+    "name": "Werner Heisenberg",
+    "confidence": 0.47957345197618106,
+    "location": [
+      860,
+      2369,
+      934,
+      2294
+    ],
+    "face_number": 24,
+    "best_match_index": 0
+  },
+  {
+    "name": "Jules Emile Verschaffelt",
+    "confidence": 0.9215604747213187,
+    "location": [
+      873,
+      1927,
+      962,
+      1837
+    ],
+    "face_number": 25,
+    "best_match_index": 18
+  },
+  {
+    "name": "Auguste Piccard",
+    "confidence": 0.5007003303108324,
+    "location": [
+      761,
+      569,
+      868,
+      462
+    ],
+    "face_number": 26,
+    "best_match_index": 26
+  },
+  {
+    "name": "Edouard Herzen",
+    "confidence": 0.5330612898319261,
+    "location": [
+      892,
+      1171,
+      982,
+      1081
+    ],
+    "face_number": 27,
+    "best_match_index": 15
+  },
+  {
+    "name": "Unknown",
+    "confidence": 0.0,
+    "location": [
+      918,
+      1440,
+      992,
+      1365
+    ],
+    "face_number": 28,
+    "best_match_index": -1
+  },
+  {
+    "name": "Paul Langevin",
+    "confidence": 0.5884719319399583,
+    "location": [
+      1143,
+      1955,
+      1250,
+      1847
+    ],
+    "face_number": 29,
+    "best_match_index": 19
+  }
+]
