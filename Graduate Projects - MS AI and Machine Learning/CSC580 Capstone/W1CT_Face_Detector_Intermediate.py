@@ -132,6 +132,58 @@ class EnhancedSolvayFaceRecognizer:
 
         return unique_faces
 
+    def load_manual_ground_truth(self):
+        """Load the manual ground truth mapping from JSON file"""
+        mapping_path = "/home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/manual_ground_truth_mapping.json"
+        
+        try:
+            with open(mapping_path, 'r') as f:
+                self.manual_ground_truth = json.load(f)
+            print(f"Loaded manual ground truth mapping with {len(self.manual_ground_truth)} entries")
+            return True
+        except FileNotFoundError:
+            print(f"Manual ground truth file not found at {mapping_path}")
+            print("Run W1CT_Manual_GT.py first to create the ground truth mapping")
+            self.manual_ground_truth = {}
+            return False
+        except Exception as e:
+            print(f"Error loading manual ground truth: {e}")
+            self.manual_ground_truth = {}
+            return False
+
+    def find_closest_manual_face(self, face_location):
+        """Find the closest manually assigned face for this detection"""
+        if not hasattr(self, 'manual_ground_truth') or not self.manual_ground_truth:
+            return "Unknown Position"
+        
+        top, right, bottom, left = face_location
+        face_center_x = (left + right) / 2
+        face_center_y = (top + bottom) / 2
+        
+        min_distance = float('inf')
+        closest_scientist = "Unknown Position"
+        
+        # Find the manual ground truth entry with the closest location
+        for face_data in self.manual_ground_truth.values():
+            manual_location = face_data['location']  # [top, right, bottom, left]
+            manual_top, manual_right, manual_bottom, manual_left = manual_location
+            manual_center_x = (manual_left + manual_right) / 2
+            manual_center_y = (manual_top + manual_bottom) / 2
+            
+            # Calculate Euclidean distance between face centers
+            distance = ((face_center_x - manual_center_x) ** 2 + 
+                       (face_center_y - manual_center_y) ** 2) ** 0.5
+            
+            if distance < min_distance:
+                min_distance = distance
+                closest_scientist = face_data['ground_truth']
+        
+        # Only return the match if it's reasonably close (within 100 pixels)
+        if min_distance < 100:
+            return closest_scientist
+        else:
+            return "Unknown Position"
+
     def detect_and_identify_faces(self, image_path):
         """Detect faces in the Solvay photo and identify them with enhanced processing"""
         #Preprocess the image
@@ -246,16 +298,36 @@ class EnhancedSolvayFaceRecognizer:
             #Draw rectangle around face
             draw.rectangle([left, top, right, bottom], outline=color, width=3)
 
-            #Draw label
-            text = f"{face['name']} ({face['confidence']:.2f})"
-            text_bbox = draw.textbbox((0, 0), text, font=font)
-            text_width = text_bbox[2] - text_bbox[0]
-            text_height = text_bbox[3] - text_bbox[1]
+            #Get ground truth name from manual mapping
+            ground_truth_name = self.find_closest_manual_face(face_location)
 
-            #Draw background for text
-            draw.rectangle([left, top - text_height - 10, left + text_width + 10, top],
+            #Draw prediction label
+            prediction_text = f"{face['name']} ({face['confidence']:.2f})"
+            pred_text_bbox = draw.textbbox((0, 0), prediction_text, font=font)
+            pred_text_width = pred_text_bbox[2] - pred_text_bbox[0]
+            pred_text_height = pred_text_bbox[3] - pred_text_bbox[1]
+
+            #Draw ground truth label
+            gt_text = f"GT: {ground_truth_name}"
+            gt_text_bbox = draw.textbbox((0, 0), gt_text, font=font)
+            gt_text_width = gt_text_bbox[2] - gt_text_bbox[0]
+            gt_text_height = gt_text_bbox[3] - gt_text_bbox[1]
+
+            #Calculate total label dimensions
+            total_width = max(pred_text_width, gt_text_width) + 10
+            total_height = pred_text_height + gt_text_height + 15
+
+            #Draw prediction background (color-coded)
+            draw.rectangle([left, top - total_height, left + total_width, top - gt_text_height - 10],
                          fill=color, outline=color)
-            draw.text((left + 5, top - text_height - 5), text, fill="white", font=font)
+            
+            #Draw ground truth background (green)
+            draw.rectangle([left, top - gt_text_height - 10, left + total_width, top],
+                         fill="green", outline="green")
+
+            #Draw texts
+            draw.text((left + 5, top - total_height + 5), prediction_text, fill="white", font=font)
+            draw.text((left + 5, top - gt_text_height - 5), gt_text, fill="white", font=font)
 
         #Add ground truth comparison box
         self.add_ground_truth_box(pil_image, identified_faces, draw, font)
@@ -428,11 +500,14 @@ class EnhancedSolvayFaceRecognizer:
 
     def run_recognition(self):
         """Main function to run the facial recognition with enhanced features"""
-        print(" ENHANCED SOLVAY FACE RECOGNITION ")
+        print(" ENHANCED SOLVAY FACE RECOGNITION WITH MANUAL GROUND TRUTH ")
         print("Loading reference images...")
         self.load_reference_images()
 
         print(f"Loaded {len(self.known_encodings)} reference faces")
+        
+        print("Loading manual ground truth mapping...")
+        self.load_manual_ground_truth()
 
         #Path to the Solvay conference photo
         solvay_photo_path = "/home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay.jpg"
