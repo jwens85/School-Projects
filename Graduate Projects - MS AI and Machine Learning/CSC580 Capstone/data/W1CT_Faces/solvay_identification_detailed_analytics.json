@@ -1,0 +1,193 @@
+{
+  "name_counts": {
+    "Leon Brillouin": 1,
+    "Wolfgang Pauli": 1,
+    "Hendrik Anthony Kramers": 1,
+    "Unknown": 7,
+    "Owen Richardson": 1,
+    "Max Born": 1,
+    "Niels Bohr": 1,
+    "Albert Einstein": 1,
+    "Emile Henriot": 1,
+    "Charles Thomson Rees Wilson": 1,
+    "Marie Curie": 1,
+    "Paul Ehrenfest": 1,
+    "Irving Langmuir": 1,
+    "Erwin Schrodinger": 1,
+    "Paul Dirac": 1,
+    "Martin Knudsen": 1,
+    "Max Planck": 1,
+    "Arthur Compton": 1,
+    "Werner Heisenberg": 1,
+    "Jules Emile Verschaffelt": 1,
+    "Auguste Piccard": 1,
+    "Edouard Herzen": 1,
+    "Paul Langevin": 1
+  },
+  "confidence_stats": {
+    "Leon Brillouin": {
+      "count": 1,
+      "mean_confidence": 0.583732295674575,
+      "std_confidence": 0.0,
+      "max_confidence": 0.583732295674575,
+      "min_confidence": 0.583732295674575
+    },
+    "Wolfgang Pauli": {
+      "count": 1,
+      "mean_confidence": 0.5915432002985934,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5915432002985934,
+      "min_confidence": 0.5915432002985934
+    },
+    "Hendrik Anthony Kramers": {
+      "count": 1,
+      "mean_confidence": 0.5584786535752724,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5584786535752724,
+      "min_confidence": 0.5584786535752724
+    },
+    "Unknown": {
+      "count": 7,
+      "mean_confidence": 0.0,
+      "std_confidence": 0.0,
+      "max_confidence": 0.0,
+      "min_confidence": 0.0
+    },
+    "Owen Richardson": {
+      "count": 1,
+      "mean_confidence": 0.5434821474237184,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5434821474237184,
+      "min_confidence": 0.5434821474237184
+    },
+    "Max Born": {
+      "count": 1,
+      "mean_confidence": 0.5371139087054653,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5371139087054653,
+      "min_confidence": 0.5371139087054653
+    },
+    "Niels Bohr": {
+      "count": 1,
+      "mean_confidence": 0.5540240286387548,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5540240286387548,
+      "min_confidence": 0.5540240286387548
+    },
+    "Albert Einstein": {
+      "count": 1,
+      "mean_confidence": 0.5452885230401179,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5452885230401179,
+      "min_confidence": 0.5452885230401179
+    },
+    "Emile Henriot": {
+      "count": 1,
+      "mean_confidence": 0.794057213285385,
+      "std_confidence": 0.0,
+      "max_confidence": 0.794057213285385,
+      "min_confidence": 0.794057213285385
+    },
+    "Charles Thomson Rees Wilson": {
+      "count": 1,
+      "mean_confidence": 0.526176173300051,
+      "std_confidence": 0.0,
+      "max_confidence": 0.526176173300051,
+      "min_confidence": 0.526176173300051
+    },
+    "Marie Curie": {
+      "count": 1,
+      "mean_confidence": 0.6189843658066673,
+      "std_confidence": 0.0,
+      "max_confidence": 0.6189843658066673,
+      "min_confidence": 0.6189843658066673
+    },
+    "Paul Ehrenfest": {
+      "count": 1,
+      "mean_confidence": 0.507226879923023,
+      "std_confidence": 0.0,
+      "max_confidence": 0.507226879923023,
+      "min_confidence": 0.507226879923023
+    },
+    "Irving Langmuir": {
+      "count": 1,
+      "mean_confidence": 0.4636935926034015,
+      "std_confidence": 0.0,
+      "max_confidence": 0.4636935926034015,
+      "min_confidence": 0.4636935926034015
+    },
+    "Erwin Schrodinger": {
+      "count": 1,
+      "mean_confidence": 0.5043069311688724,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5043069311688724,
+      "min_confidence": 0.5043069311688724
+    },
+    "Paul Dirac": {
+      "count": 1,
+      "mean_confidence": 0.4888165940156868,
+      "std_confidence": 0.0,
+      "max_confidence": 0.4888165940156868,
+      "min_confidence": 0.4888165940156868
+    },
+    "Martin Knudsen": {
+      "count": 1,
+      "mean_confidence": 0.5007422400277921,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5007422400277921,
+      "min_confidence": 0.5007422400277921
+    },
+    "Max Planck": {
+      "count": 1,
+      "mean_confidence": 0.6999862682643929,
+      "std_confidence": 0.0,
+      "max_confidence": 0.6999862682643929,
+      "min_confidence": 0.6999862682643929
+    },
+    "Arthur Compton": {
+      "count": 1,
+      "mean_confidence": 0.6065930675850355,
+      "std_confidence": 0.0,
+      "max_confidence": 0.6065930675850355,
+      "min_confidence": 0.6065930675850355
+    },
+    "Werner Heisenberg": {
+      "count": 1,
+      "mean_confidence": 0.47957345197618106,
+      "std_confidence": 0.0,
+      "max_confidence": 0.47957345197618106,
+      "min_confidence": 0.47957345197618106
+    },
+    "Jules Emile Verschaffelt": {
+      "count": 1,
+      "mean_confidence": 0.9215604747213187,
+      "std_confidence": 0.0,
+      "max_confidence": 0.9215604747213187,
+      "min_confidence": 0.9215604747213187
+    },
+    "Auguste Piccard": {
+      "count": 1,
+      "mean_confidence": 0.5007003303108324,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5007003303108324,
+      "min_confidence": 0.5007003303108324
+    },
+    "Edouard Herzen": {
+      "count": 1,
+      "mean_confidence": 0.5330612898319261,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5330612898319261,
+      "min_confidence": 0.5330612898319261
+    },
+    "Paul Langevin": {
+      "count": 1,
+      "mean_confidence": 0.5884719319399583,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5884719319399583,
+      "min_confidence": 0.5884719319399583
+    }
+  },
+  "total_faces": 29,
+  "identified_faces": 22,
+  "success_rate": 75.86206896551724
+}
