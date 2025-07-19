@@ -9,7 +9,7 @@
     "Niels Bohr": 1,
     "Albert Einstein": 1,
     "Emile Henriot": 1,
-    "Charles Thomson Rees Wilson": 1,
+    "Charles Wilson": 1,
     "Marie Curie": 1,
     "Paul Ehrenfest": 1,
     "Irving Langmuir": 1,
@@ -88,7 +88,7 @@
       "max_confidence": 0.794057213285385,
       "min_confidence": 0.794057213285385
     },
-    "Charles Thomson Rees Wilson": {
+    "Charles Wilson": {
       "count": 1,
       "mean_confidence": 0.526176173300051,
       "std_confidence": 0.0,

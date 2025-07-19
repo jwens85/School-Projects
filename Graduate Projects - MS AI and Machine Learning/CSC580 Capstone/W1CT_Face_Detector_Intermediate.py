@@ -292,10 +292,11 @@ class EnhancedSolvayFaceRecognizer:
             face_location = [face["location"][0], face["location"][1], face["location"][2], face["location"][3]]
             top, right, bottom, left = face_location
 
-            #Color coding based on confidence
-            if face["confidence"] > 0.5:
+            #Color coding based on confidence (round to 2 decimal places for consistent display)
+            rounded_confidence = round(face["confidence"], 2)
+            if rounded_confidence > 0.5:
                 color = "green"
-            elif face["confidence"] > 0.3:
+            elif rounded_confidence >= 0.4:
                 color = "orange"
             else:
                 color = "red"
@@ -404,7 +405,7 @@ class EnhancedSolvayFaceRecognizer:
             f"Total Faces Detected: {total_faces}",
             f"Correctly Identified: {correct_identifications}",
             f"Incorrectly Identified: {incorrect_identifications}",
-            f"Unknown/Unidentified: {unidentified_count}",
+            f"Unidentified: {unidentified_count}",
             f"Accuracy (of identified): {accuracy:.1f}%",
             f"Overall Success Rate: {(correct_identifications/total_faces*100):.1f}%"
         ]
@@ -435,51 +436,285 @@ class EnhancedSolvayFaceRecognizer:
         return name_counts, confidence_stats, df
 
     def create_visualization(self, name_counts, confidence_stats, output_dir):
-        """Create visualization plots of the results"""
-        #Create figure with subplots
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
-
-        #Plot 1: Number of detections per scientist
-        scientists = list(name_counts.keys())
-        counts = list(name_counts.values())
-
-        ax1.bar(scientists, counts, color='skyblue')
-        ax1.set_title('Number of Face Detections per Scientist')
-        ax1.set_xlabel('Scientist')
-        ax1.set_ylabel('Number of Detections')
-        ax1.tick_params(axis='x', rotation=45)
-
-        #Plot 2: Confidence distribution
-        all_confidences = [stats['mean_confidence'] for stats in confidence_stats.values()]
-        ax2.hist(all_confidences, bins=20, color='lightgreen', alpha=0.7)
-        ax2.set_title('Distribution of Average Confidence Scores')
-        ax2.set_xlabel('Average Confidence')
-        ax2.set_ylabel('Frequency')
-
-        #Plot 3: Confidence by scientist
-        scientists_with_conf = [name for name in confidence_stats.keys() if name != 'Unknown']
-        mean_confs = [confidence_stats[name]['mean_confidence'] for name in scientists_with_conf]
-
-        ax3.scatter(scientists_with_conf, mean_confs, s=100, alpha=0.7, color='red')
-        ax3.set_title('Mean Confidence Score by Scientist')
-        ax3.set_xlabel('Scientist')
-        ax3.set_ylabel('Mean Confidence')
-        ax3.tick_params(axis='x', rotation=45)
-
-        #Plot 4: Recognition success rate
-        total_faces = sum(name_counts.values())
-        identified_faces = total_faces - name_counts.get('Unknown', 0)
-        success_rate = (identified_faces / total_faces) * 100
-
-        ax4.pie([identified_faces, name_counts.get('Unknown', 0)],
-                labels=['Identified', 'Unknown'],
-                autopct='%1.1f%%',
-                colors=['lightblue', 'lightcoral'])
-        ax4.set_title(f'Recognition Success Rate: {success_rate:.1f}%')
-
-        plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'enhanced_recognition_analytics.png'), dpi=300, bbox_inches='tight')
+        """Create enhanced visualization with meaningful analytics"""
+        plt.style.use('default')
+        
+        # Create figure with better layout (removed historical context for more space)
+        fig = plt.figure(figsize=(20, 10))
+        gs = fig.add_gridspec(2, 4, hspace=0.3, wspace=0.3, height_ratios=[1, 2])
+        
+        # Color scheme
+        primary_color = '#2E86AB'
+        success_color = '#A23B72'
+        warning_color = '#F18F01'
+        error_color = '#C73E1D'
+        
+        # 1. System Performance Dashboard (top left)
+        ax1 = fig.add_subplot(gs[0, :2])
+        self._create_performance_dashboard(ax1, name_counts, confidence_stats)
+        
+        # 2. Confidence Analysis (top right)
+        ax2 = fig.add_subplot(gs[0, 2:])
+        self._create_confidence_analysis(ax2, confidence_stats, primary_color, success_color)
+        
+        # 3. Recognition Accuracy by Scientist (bottom row, compressed slightly to avoid overlap)
+        ax3 = fig.add_subplot(gs[1, :2])
+        self._create_accuracy_breakdown(ax3, confidence_stats, primary_color, success_color, error_color)
+        
+        # 4. Confusion Analysis (bottom right, more space)
+        ax4 = fig.add_subplot(gs[1, 2:])
+        
+        # Calculate confidence breakdown for the donut chart (round confidence for consistent display)
+        confidence_breakdown = {'high': 0, 'medium': 0, 'low': 0}
+        for name, stats in confidence_stats.items():
+            if name != 'Unknown':
+                rounded_conf = round(stats['mean_confidence'], 2)
+                if rounded_conf > 0.5:
+                    confidence_breakdown['high'] += stats['count']
+                elif rounded_conf >= 0.4:
+                    confidence_breakdown['medium'] += stats['count']
+                else:
+                    confidence_breakdown['low'] += stats['count']
+        
+        self._temp_confidence_breakdown = confidence_breakdown
+        self._create_confusion_insights(ax4, name_counts, warning_color, error_color)
+        
+        plt.suptitle('Solvay Conference 1927 - Face Recognition Analytics Dashboard', 
+                    fontsize=20, fontweight='bold', y=0.95)
+        
+        plt.savefig(os.path.join(output_dir, 'recognition_analytics.png'), 
+                   dpi=300, bbox_inches='tight', facecolor='white')
         plt.close()
+    
+    def _create_performance_dashboard(self, ax, name_counts, confidence_stats):
+        """Create a clean performance metrics dashboard with confidence breakdown"""
+        ax.axis('off')
+        
+        total_faces = sum(name_counts.values())
+        unknown_faces = name_counts.get('Unknown', 0)
+        
+        # Calculate confidence breakdowns using rounded values for consistency
+        high_confidence = 0
+        medium_confidence = 0
+        low_confidence = 0
+        
+        for name, stats in confidence_stats.items():
+            if name != 'Unknown':
+                rounded_conf = round(stats['mean_confidence'], 2)
+                if rounded_conf > 0.5:
+                    high_confidence += stats['count']
+                elif rounded_conf >= 0.4:
+                    medium_confidence += stats['count']
+                else:
+                    low_confidence += stats['count']
+        
+        metrics = [
+            ('Total Faces Detected', total_faces, '#2E86AB'),
+            ('High Confidence IDs', high_confidence, '#2E8B57'),  # Green
+            ('Medium Confidence IDs', medium_confidence, '#F18F01'),  # Orange
+            ('Low Confidence IDs', low_confidence, '#C73E1D'),  # Red
+            ('Unknown/Unidentified', unknown_faces, '#C73E1D'),  # Red
+            ('Overall Success Rate', f"{((high_confidence + medium_confidence + low_confidence)/total_faces*100):.1f}%", '#2E8B57')
+        ]
+        
+        # Adjust layout for more metrics
+        y_positions = [0.9, 0.75, 0.6, 0.45, 0.3, 0.15]
+        
+        for i, (label, value, color) in enumerate(metrics):
+            # Metric box
+            rect = plt.Rectangle((0.05, y_positions[i] - 0.04), 0.9, 0.08, 
+                               facecolor=color, alpha=0.2, edgecolor=color, linewidth=2)
+            ax.add_patch(rect)
+            
+            # Label and value
+            ax.text(0.1, y_positions[i], label, fontsize=11, fontweight='bold')
+            ax.text(0.9, y_positions[i], str(value), fontsize=12, fontweight='bold', 
+                   ha='right', color=color)
+        
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_title('System Performance Breakdown', fontsize=14, fontweight='bold', pad=20)
+    
+    def _create_confidence_analysis(self, ax, confidence_stats, primary_color, success_color):
+        """Create confidence distribution analysis"""
+        # Get confidence data for identified scientists only
+        identified_scientists = [name for name in confidence_stats.keys() if name != 'Unknown']
+        confidences = [confidence_stats[name]['mean_confidence'] for name in identified_scientists]
+        
+        if not confidences:
+            ax.text(0.5, 0.5, 'No identified scientists', ha='center', va='center', fontsize=12)
+            ax.set_title('Confidence Analysis', fontsize=14, fontweight='bold')
+            return
+        
+        # Create histogram with better bins
+        n_bins = min(10, len(confidences))
+        n, bins, patches = ax.hist(confidences, bins=n_bins, alpha=0.7, edgecolor='black', linewidth=1)
+        
+        # Color bars based on confidence level (round for consistency)
+        for i, patch in enumerate(patches):
+            rounded_bin = round(bins[i], 2)
+            if rounded_bin < 0.4:
+                patch.set_facecolor(error_color := '#C73E1D')
+            elif rounded_bin <= 0.5:
+                patch.set_facecolor('#F18F01')
+            else:
+                patch.set_facecolor('#2E8B57')
+        
+        ax.axvline(np.mean(confidences), color='red', linestyle='--', linewidth=2, 
+                  label=f'Mean: {np.mean(confidences):.2f}')
+        ax.set_xlabel('Confidence Score', fontsize=12)
+        ax.set_ylabel('Number of Scientists', fontsize=12)
+        ax.set_title('Confidence Score Distribution', fontsize=14, fontweight='bold')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+    
+    def _create_accuracy_breakdown(self, ax, confidence_stats, primary_color, success_color, error_color):
+        """Create scientist-by-scientist accuracy breakdown including unidentified faces"""
+        identified_scientists = [name for name in confidence_stats.keys() if name != 'Unknown']
+        
+        # Add identified scientists to the data
+        scientist_data = [(name, confidence_stats[name]['mean_confidence'], 'identified') 
+                         for name in identified_scientists]
+        
+        # Get unidentified scientists from ground truth
+        if hasattr(self, 'manual_ground_truth') and self.manual_ground_truth:
+            # Get all scientists that should be in the photo from ground truth
+            all_gt_scientists = set()
+            for face_data in self.manual_ground_truth.values():
+                gt_name = face_data['ground_truth']
+                if gt_name != "Unknown Position":
+                    all_gt_scientists.add(gt_name)
+            
+            # Find scientists in ground truth but not identified
+            identified_names = set(identified_scientists)
+            unidentified_scientists = all_gt_scientists - identified_names
+            
+            # Add unidentified scientists with negative value to make them visible as red bars
+            for scientist in unidentified_scientists:
+                scientist_data.append((scientist, -0.12, 'unidentified'))
+        
+        if not scientist_data:
+            ax.text(0.5, 0.5, 'No faces detected', ha='center', va='center', fontsize=12)
+            ax.set_title('Recognition Accuracy by Scientist', fontsize=14, fontweight='bold')
+            return
+        
+        # Sort by confidence (identified scientists first, then unidentified)
+        scientist_data.sort(key=lambda x: x[1], reverse=True)
+        
+        names = [item[0] for item in scientist_data]
+        confidences = [item[1] for item in scientist_data]
+        status = [item[2] for item in scientist_data]
+        
+        # Create horizontal bar chart with colors (round confidence for consistent display)
+        colors = []
+        for i, conf in enumerate(confidences):
+            rounded_conf = round(conf, 2)
+            if status[i] == 'unidentified' or conf < 0:
+                colors.append(error_color)  # Red for unidentified (negative values)
+            elif rounded_conf > 0.5:
+                colors.append('#2E8B57')    # Green for high confidence
+            elif rounded_conf >= 0.4:
+                colors.append('#F18F01')    # Orange for medium confidence (includes 0.5)
+            else:
+                colors.append(error_color)  # Red for low confidence
+        
+        bars = ax.barh(range(len(names)), confidences, color=colors, alpha=0.8, edgecolor='black')
+        
+        # Add confidence values on bars
+        for i, (bar, conf, stat) in enumerate(zip(bars, confidences, status)):
+            if stat == 'identified':  # Show confidence for identified scientists
+                ax.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2, 
+                       f'{conf:.2f}', va='center', fontsize=10, fontweight='bold')
+            elif stat == 'unidentified':  # Show "Unknown" inside negative bars
+                ax.text(bar.get_width() / 2, bar.get_y() + bar.get_height()/2, 
+                       'Unknown', va='center', ha='center', fontsize=9, fontweight='bold', color='white')
+        
+        ax.set_yticks(range(len(names)))
+        # Truncate long names for better display
+        display_names = []
+        for name in names:
+            display_names.append(name.split()[-1] if len(name.split()) > 1 else name)
+        
+        ax.set_yticklabels(display_names, fontsize=10)
+        ax.set_xlabel('Confidence Score', fontsize=12)
+        ax.set_title('Recognition Results: All Scientists (Sorted by Confidence)', 
+                    fontsize=14, fontweight='bold')
+        ax.grid(True, axis='x', alpha=0.3)
+        ax.set_xlim(-0.15, 1)  # Extended more to show negative bars for unidentified scientists
+        
+        # Add confidence thresholds
+        ax.axvline(0.5, color='green', linestyle='--', alpha=0.7, label='High Confidence')
+        ax.axvline(0.4, color='orange', linestyle='--', alpha=0.7, label='Medium Confidence')
+        ax.legend(loc='upper right')
+    
+    def _create_confusion_insights(self, ax, name_counts, warning_color, error_color):
+        """Create insights about recognition challenges"""
+        ax.axis('off')
+        
+        total_faces = sum(name_counts.values())
+        unknown_faces = name_counts.get('Unknown', 0)
+        identified_faces = total_faces - unknown_faces
+        
+        # Break down identified faces by confidence level
+        high_confidence = 0
+        medium_confidence = 0
+        low_confidence = 0
+        
+        # Access confidence stats from parent scope (we need to pass this data)
+        # For now, we'll approximate based on the identified vs unknown split
+        # This is a simplified version - ideally we'd pass detailed confidence breakdown
+        
+        if hasattr(self, '_temp_confidence_breakdown'):
+            high_confidence = self._temp_confidence_breakdown.get('high', 0)
+            medium_confidence = self._temp_confidence_breakdown.get('medium', 0) 
+            low_confidence = self._temp_confidence_breakdown.get('low', 0)
+        else:
+            # Fallback: assume all identified are high confidence for now
+            high_confidence = identified_faces
+        
+        # Create pie chart with confidence breakdown
+        if total_faces > 0:
+            sizes = []
+            labels = []
+            colors = []
+            
+            if high_confidence > 0:
+                sizes.append(high_confidence)
+                labels.append('High Confidence')
+                colors.append('#2E8B57')  # Green
+                
+            if medium_confidence > 0:
+                sizes.append(medium_confidence)
+                labels.append('Medium Confidence') 
+                colors.append('#F18F01')  # Orange/Yellow
+                
+            if low_confidence > 0:
+                sizes.append(low_confidence)
+                labels.append('Low Confidence')
+                colors.append(error_color)  # Red
+                
+            if unknown_faces > 0:
+                sizes.append(unknown_faces)
+                labels.append('Unidentified')
+                colors.append(error_color)  # Red
+            
+            wedges, texts, autotexts = ax.pie(sizes,
+                                            labels=labels,
+                                            autopct='%1.1f%%',
+                                            colors=colors,
+                                            startangle=90,
+                                            textprops={'fontsize': 10, 'fontweight': 'bold'})
+            
+            # Add center circle for donut effect
+            centre_circle = plt.Circle((0,0), 0.50, fc='white')
+            ax.add_artist(centre_circle)
+            
+            # Add center text
+            ax.text(0, 0, f'{total_faces}\nFaces\nDetected', ha='center', va='center', 
+                   fontsize=12, fontweight='bold')
+        
+        ax.set_title('Recognition Quality Breakdown', fontsize=14, fontweight='bold')
+    
 
     def save_results(self, image, identified_faces, output_path):
         """Save the annotated image and results with enhanced analytics"""
@@ -520,7 +755,7 @@ class EnhancedSolvayFaceRecognizer:
         print(f"Details saved to {results_path}")
         print(f"Analytics saved to {csv_path}")
         print(f"Detailed analytics saved to {analytics_path}")
-        print(f"Visualization saved to {os.path.join(output_dir, 'enhanced_recognition_analytics.png')}")
+        print(f"Visualization saved to {os.path.join(output_dir, 'recognition_analytics.png')}")
 
     def run_recognition(self):
         """Main function to run the facial recognition with enhanced features"""
