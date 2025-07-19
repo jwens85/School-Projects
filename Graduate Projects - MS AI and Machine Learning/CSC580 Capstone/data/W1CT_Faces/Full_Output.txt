@@ -1,0 +1,812 @@
+﻿"/home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/noTF/bin/python" /home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/W1CT_Face_Detector_Advanced.py 
+ ADVANCED INTERACTIVE SOLVAY FACE RECOGNITION SYSTEM 
+Initializing with interactive capabilities...
+Loaded verified URLs for 29 scientists
+Loading summarization model... (this may take a moment on first run)
+Device set to CUDA GPU: NVIDIA GeForce RTX 3080
+Summarization model loaded successfully!
+ ADVANCED INTERACTIVE SOLVAY FACE RECOGNITION 
+Loading reference images...
+Loaded 1 reference images for Werner Heisenberg
+Loaded 1 reference images for Hendrik Anthony Kramers
+Loaded 1 reference images for Charles Eugene Guye
+Loaded 1 reference images for Arthur Compton
+Loaded 1 reference images for Leon Brillouin
+Loaded 6 reference images for Max Planck
+Loaded 1 reference images for Max Born
+Loaded 3 reference images for Peter Debye
+Loaded 1 reference images for Edouard Herzen
+Loaded 1 reference images for Albert Einstein
+Loaded 1 reference images for Marie Curie
+Loaded 1 reference images for Jules Emile Verschaffelt
+Loaded 1 reference images for Paul Langevin
+Loaded 3 reference images for Emile Henriot
+Loaded 1 reference images for Irving Langmuir
+Loaded 2 reference images for Paul Ehrenfest
+Loaded 1 reference images for Auguste Piccard
+Loaded 1 reference images for Paul Dirac
+Loaded 1 reference images for Ralph Fowler
+Loaded 1 reference images for Owen Richardson
+Loaded 1 reference images for Niels Bohr
+Loaded 1 reference images for William Lawrence Bragg
+Loaded 2 reference images for Louis de Broglie
+Loaded 1 reference images for Erwin Schrodinger
+Loaded 2 reference images for Theophile de Donder
+Loaded 1 reference images for Charles Wilson
+Loaded 2 reference images for Hendrik Lorentz
+Loaded 1 reference images for Martin Knudsen
+Loaded 1 reference images for Wolfgang Pauli
+Loaded 42 reference faces
+Loading manual ground truth mapping...
+Loaded manual ground truth mapping with 29 entries
+Analyzing Solvay conference photo with enhanced processing...
+Initial face detections: 29
+After filtering: 29 faces
+Results saved to /home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay_advanced_identification.png
+Details saved to /home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay_advanced_identification_results.json
+Analytics saved to /home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay_advanced_identification_analytics.csv
+Detailed analytics saved to /home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay_advanced_identification_detailed_analytics.json
+Visualization saved to /home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/advanced_recognition_analytics.png
+
+ ADVANCED IDENTIFICATION RESULTS 
+Total faces detected: 29
+Successfully identified: 23
+Success rate: 79.3%
+
+ IDENTIFIED SCIENTISTS 
+  Leon Brillouin: 1 detections, avg confidence: 0.584
+  Wolfgang Pauli: 1 detections, avg confidence: 0.592
+  Hendrik Anthony Kramers: 1 detections, avg confidence: 0.558
+  Owen Richardson: 1 detections, avg confidence: 0.543
+  Louis de Broglie: 1 detections, avg confidence: 0.514
+  Hendrik Lorentz: 1 detections, avg confidence: 0.546
+  Max Born: 1 detections, avg confidence: 0.537
+  Niels Bohr: 1 detections, avg confidence: 0.554
+  Albert Einstein: 1 detections, avg confidence: 0.545
+  Emile Henriot: 1 detections, avg confidence: 0.794
+  Charles Wilson: 1 detections, avg confidence: 0.526
+  Marie Curie: 1 detections, avg confidence: 0.619
+  Paul Ehrenfest: 1 detections, avg confidence: 0.507
+  Erwin Schrodinger: 1 detections, avg confidence: 0.504
+  Paul Dirac: 1 detections, avg confidence: 0.489
+  Martin Knudsen: 1 detections, avg confidence: 0.501
+  Max Planck: 1 detections, avg confidence: 0.700
+  Arthur Compton: 1 detections, avg confidence: 0.607
+  Werner Heisenberg: 1 detections, avg confidence: 0.480
+  Jules Emile Verschaffelt: 1 detections, avg confidence: 0.922
+  Auguste Piccard: 1 detections, avg confidence: 0.501
+  Edouard Herzen: 1 detections, avg confidence: 0.533
+  Paul Langevin: 1 detections, avg confidence: 0.588
+
+ UNKNOWN FACES 
+  Unknown: 6 faces
+
+ PROGRAM COMPLETE 
+Advanced analysis complete! Check the output files for:
+  - Interactive annotated image with clickable scientist names
+  - Detailed JSON results
+  - Analytics CSV data
+  - Comprehensive visualization charts
+  - Wikipedia-powered scientist summaries
+
+Launching interactive mode...
+
+============================================================
+INTERACTIVE MODE ACTIVATED
+============================================================
+Click on any scientist's face to get their HuggingFace Transformers summary!
+Press 'q' or ESC to quit.
+============================================================
+Original image size: 3000 x 2171
+Display window size: 1243 x 900 (scale: 0.41)
+Using 0.41 scaling factor for coordinate mapping
+
+OpenCV window 'Interactive Solvay Conference 1927 - Click on Scientists!' is now open!
+Click anywhere on a scientist's face or name to get their HuggingFace Transformers summary.
+Press 'q' or ESC to close the window and end the program.
+Direct hit on face box: Albert Einstein
+You clicked on: Albert Einstein
+Fetching HuggingFace Transformers summary...
+Fetching information for Albert Einstein...
+Successfully loaded Albert Einstein's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Albert Einstein
+================================================================================
+Wikipedia: Found
+Content Length: 82,123 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Albert Einstein: Albert Einstein (14 March 1879 – 18 April 1955) was a German-
+born theoretical physicist. He is best known for developing the theory of
+relativity. His mass–energy equivalence formula E = mc, which arises from
+special relativity, has been called "the world's most famous equation" He
+received the 1921 Nobel Prize in Physics for his services to theoretical
+physics. In 1905, sometimes described as his annus mirabilis (miracle year), he
+published four groundbreaking papers.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Erwin Schrodinger
+You clicked on: Erwin Schrodinger
+Fetching HuggingFace Transformers summary...
+Fetching information for Erwin Schrodinger...
+Successfully loaded Erwin Schrodinger's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Erwin Schrodinger
+================================================================================
+Wikipedia: Found
+Content Length: 22,864 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Erwin Schrodinger: Erwin Rudolf Josef Alexander Schrödinger (12 August 1887 – 4
+January 1961) was an Austrian-Irish theoretical physicist. He won the Nobel
+Prize in Physics in 1933 for his work on quantum mechanics. In popular culture,
+he is best known for his "SchröDinger's cat" thought experiment. He also wrote
+on philosophy and theoretical biology. He was accused of sexually abusing
+several minors. He died in Dublin, Ireland, where he lived until his retirement
+in 1955.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Max Planck
+You clicked on: Max Planck
+Fetching HuggingFace Transformers summary...
+Fetching information for Max Planck...
+Successfully loaded Max Planck's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Max Planck
+================================================================================
+Wikipedia: Found
+Content Length: 29,450 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Max Planck: Max Karl Ernst Ludwig Planck (German: [maks ˈplaŋk] ; 23 April 1858
+– 4 October 1947) was a German theoretical physicist whose discovery of energy
+quanta won him the Nobel Prize in Physics in 1918. He is known for the Planck
+constant, which is of foundational importance for quantum physics, and which he
+used to derive a set of units, today called Planck units, expressed only in
+terms of fundamental physical constants. Planck was the sixth child in the
+family, though two of his siblings were from his father's first marriage.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Hendrik Lorentz
+You clicked on: Hendrik Lorentz
+Fetching HuggingFace Transformers summary...
+Fetching information for Hendrik Lorentz...
+Successfully loaded Hendrik Lorentz's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Hendrik Lorentz
+================================================================================
+Wikipedia: Found
+Content Length: 20,889 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Hendrik Lorentz: Hendrik Antoon Lorentz (18 July 1853 – 4 February 1928) was a
+Dutch theoretical physicist. He shared the 1902 Nobel Prize in Physics with
+Pieter Zeeman for their discovery and theoretical explanation of the Zeeman
+effect. He was the father and doctoral advisor of Geertruida de Haas-Lorentz. He
+received many other honours and distinctions, including a term as chairman of
+the International Committee on Intellectual Cooperation, the forerunner of
+UNESCO, between 1925 and 1928.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Paul Dirac
+You clicked on: Paul Dirac
+Fetching HuggingFace Transformers summary...
+Fetching information for Paul Dirac...
+Successfully loaded Paul Dirac's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Paul Dirac
+================================================================================
+Wikipedia: Found
+Content Length: 35,995 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Paul Dirac: Paul Adrien Maurice Dirac (8 August 1902 – 20 October 1984) was an
+English mathematician and theoretical physicist. He is considered to be one of
+the founders of quantum mechanics. Dirac laid the foundations for both quantum
+electrodynamics and quantum field theory. He shared the 1933 Nobel Prize in
+Physics with Erwin Schrödinger "for the discovery of new productive forms of
+atomic theory" He was the Lucasian Professor of Mathematics at the University of
+Cambridge and a professor of physics at Florida State University.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Niels Bohr
+You clicked on: Niels Bohr
+Fetching HuggingFace Transformers summary...
+Fetching information for Niels Bohr...
+Successfully loaded Niels Bohr's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Niels Bohr
+================================================================================
+Wikipedia: Found
+Content Length: 42,837 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Niels Bohr: Niels Henrik David Bohr was a Danish theoretical physicist. He
+received the Nobel Prize in Physics in 1922. Bohr developed the Bohr model of
+the atom, in which he proposed that energy levels of electrons are discrete and
+that the electrons revolve in stable orbits around the atomic nucleus. The
+synthetic element bohrium was named after him because of his groundbreaking work
+on the structure of atoms. During the 1930s, Bohr helped refugees from Nazism.
+He was part of the British mission to the Manhattan Project. After the war, he
+called for international coop.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Marie Curie
+You clicked on: Marie Curie
+Fetching HuggingFace Transformers summary...
+Fetching information for Marie Curie...
+Successfully loaded Marie Curie's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Marie Curie
+================================================================================
+Wikipedia: Found
+Content Length: 35,956 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Marie Curie: Maria Salomea Skłodowska-Curie (7 November 1867 – 4 July 1934) was
+a Polish and naturalised-French physicist and chemist. She was the first woman
+to win a Nobel Prize, and the first person to win the Nobel Prize twice. Marie
+Curie won the 1911 Nobel Prize in Chemistry for her discovery of the elements
+polonium and radium. During World War I, she developed mobile radiography units
+to provide X-ray services to field hospitals. She died in 1934, aged 66, at the
+Sancellemoz sanatorium.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Wolfgang Pauli
+You clicked on: Wolfgang Pauli
+Fetching HuggingFace Transformers summary...
+Fetching information for Wolfgang Pauli...
+Successfully loaded Wolfgang Pauli's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Wolfgang Pauli
+================================================================================
+Wikipedia: Found
+Content Length: 14,635 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Wolfgang Pauli: Wolfgang Ernst Pauli (25 April 1900 – 15 December 1958) was an
+Austrian theoretical physicist and a pioneer of quantum mechanics. In 1945,
+after having been nominated by Albert Einstein, Pauli received the Nobel Prize
+in Physics. In particular, he formulated the exclusion principle and the theory
+of nonrelativistic spin. Pauli posited the existence of a small neutral
+particle, dubbed the neutrino by Enrico Fermi. The neutrinos were detected in
+1956.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Werner Heisenberg
+You clicked on: Werner Heisenberg
+Fetching HuggingFace Transformers summary...
+Fetching information for Werner Heisenberg...
+Successfully loaded Werner Heisenberg's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Werner Heisenberg
+================================================================================
+Wikipedia: Found
+Content Length: 49,700 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Werner Heisenberg: Werner Karl Heisenberg (5 December 1901 – 1 February 1976)
+was a German theoretical physicist. He was one of the main pioneers of the
+theory of quantum mechanics. He also made contributions to the theories of the
+atomic nucleus, ferromagnetism, cosmic rays, and subatomic particles. In 1932,
+he was awarded the Nobel Prize in Physics for his work on quantum mechanics and
+the wave function collapse. During World War II he was a principal scientist in
+the German nuclear program. He is known for the uncertainty principle, which he
+published in 1927.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Max Born
+You clicked on: Max Born
+Fetching HuggingFace Transformers summary...
+Fetching information for Max Born...
+Successfully loaded Max Born's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Max Born
+================================================================================
+Wikipedia: Found
+Content Length: 26,225 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Max Born: Max Born was a German-British theoretical physicist. He was
+instrumental in the development of quantum mechanics. Born shared the 1954 Nobel
+Prize in Physics with Walther Bothe. He also made contributions to solid-state
+physics and optics. He supervised the work of a number of notable physicists in
+the 1920s and 1930s. In 1925 he and Werner Heisenberg formulated the matrix
+mechanics representation of quantum Mechanics. The following year, he formulated
+the now-standard interpretation of the probability density function for ψ*ψ in
+the Schrödinger equation.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Auguste Piccard
+You clicked on: Auguste Piccard
+Fetching HuggingFace Transformers summary...
+Fetching information for Auguste Piccard...
+Successfully loaded Auguste Piccard's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Auguste Piccard
+================================================================================
+Wikipedia: Found
+Content Length: 4,233 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Auguste Piccard: Piccard was a professor of physics at the Free University of
+Brussels. He was a member of the Solvay Congress of 1922, 1924, 1927, 1930 and
+1933. An important motivation for his research in the upper atmosphere was
+measurements of cosmic radiation. These were supposed to give experimental
+evidence for the theories of Albert Einstein, whom Piccard knew from theSolvay
+conferences and who was a fellow alumnus of ETH.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Emile Henriot
+You clicked on: Emile Henriot
+Fetching HuggingFace Transformers summary...
+Fetching information for Emile Henriot...
+Successfully loaded Emile Henriot's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Emile Henriot
+================================================================================
+Wikipedia: Found
+Content Length: 812 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Emile Henriot: He obtained his DSc in physics in 1912 the Sorbonne, Paris, under
+Marie Curie. He attended the Solvay Conferences of 1924, 1927, 1930, 1933, 1948,
+1951 and 1954. For many of the conferences he assisted with preparing the venue
+or other administrative tasks.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Paul Ehrenfest
+You clicked on: Paul Ehrenfest
+Fetching HuggingFace Transformers summary...
+Fetching information for Paul Ehrenfest...
+Successfully loaded Paul Ehrenfest's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Paul Ehrenfest
+================================================================================
+Wikipedia: Found
+Content Length: 12,423 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Paul Ehrenfest: Paul Ehrenfest (18 January 1880 – 25 September 1933) was an
+Austrian theoretical physicist. He made major contributions to statistical
+mechanics and its relation to quantum mechanics. He befriended Albert Einstein
+on a visit to Prague in 1912 and became a professor in Leiden, where he
+frequently hosted Einstein. In 1933, suffering from depression, he killed his
+disabled son, Wassik, and then himself. He was married to Tatyana Afanasyeva, a
+young mathematician born in Kiev and educated in St Petersburg.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Edouard Herzen
+You clicked on: Edouard Herzen
+Fetching HuggingFace Transformers summary...
+Fetching information for Edouard Herzen...
+Successfully loaded Edouard Herzen's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Edouard Herzen
+================================================================================
+Wikipedia: Found
+Content Length: 896 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Edouard Herzen: Édouard Herzen was a Belgian chemist of Russian descent. He
+played a leading role in the development of physics and chemistry during the
+twentieth century. He collaborated with industrialist Ernest Solvay, and
+participated in the first, second, fourth, fifth, sixth and seventhSolvay
+Conferences.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Theophile de Donder
+You clicked on: Theophile de Donder
+Fetching HuggingFace Transformers summary...
+Fetching information for Theophile de Donder...
+Successfully loaded Theophile de Donder's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Theophile de Donder
+================================================================================
+Wikipedia: Found
+Content Length: 1,406 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Theophile de Donder: De Donder was an associate and friend of Albert Einstein.
+He is considered the father of thermodynamics of irreversible processes. He
+developed the definition of chemical affinity in 1923. De Donder's work was
+later developed further by his doctoral student Ilya Prigogine. He was a member
+of the Solvay Conferences of 1924, 1930, and 1948. He also attended the
+International Solvays Institute for Physics in Belgium in 1927. He died in
+Paris, France, in 1968.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Jules Emile Verschaffelt
+You clicked on: Jules Emile Verschaffelt
+Fetching HuggingFace Transformers summary...
+Fetching information for Jules Emile Verschaffelt...
+Successfully loaded Jules Emile Verschaffelt's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Jules Emile Verschaffelt
+================================================================================
+Wikipedia: Found
+Content Length: 461 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Jules Emile Verschaffelt: Jules-Émile Verschaffelt (27 January 1870 in Ghent –
+22 December 1955) was a Belgian physicist. He worked at Kamerlingh Onnes's
+laboratory in Leiden from 1894 to 1906. From 1906 to 1914 he worked at the Vrije
+Universiteit Brussel and from 1923 to 1940 at the Ghent University. He was one
+of the participants of the fifth Solvay Conference on Physics.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Ralph Fowler
+You clicked on: Ralph Fowler
+Fetching HuggingFace Transformers summary...
+Fetching information for Ralph Fowler...
+Successfully loaded Ralph Fowler's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Ralph Fowler
+================================================================================
+Wikipedia: Found
+Content Length: 3,959 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Ralph Fowler: In World War I he obtained a commission in the Royal Marine
+Artillery and was seriously wounded in his shoulder in the Gallipoli campaign.
+He was awarded the OBE in 1918. In 1919, Fowler returned to Trinity and was
+appointed college lecturer in mathematics in 1920. Here he worked on
+thermodynamics and statistical mechanics, bringing a new approach to physical
+chemistry. In 1931, he was the first to formulate and label the zeroth law of
+thermodynamics. In 1933 he worked with John Bernal to develop a model for the
+structure of water and ice known as the ice rules.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Leon Brillouin
+You clicked on: Leon Brillouin
+Fetching HuggingFace Transformers summary...
+Fetching information for Leon Brillouin...
+Successfully loaded Leon Brillouin's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Leon Brillouin
+================================================================================
+Wikipedia: Found
+Content Length: 4,421 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Leon Brillouin: Léon Nicolas Brillouin was a French physicist. He made
+contributions to quantum mechanics, radio wave propagation in the atmosphere,
+solid-state physics, and information theory. He was awarded his Docteur ès
+science in 1920. After receipt of his doctorate, he became the scientific
+secretary of the reorganized Journal de Physique et le Radium. In 1932, he was
+associate director of the physics laboratories at the Collège de France. He died
+on October 4, 1969.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Peter Debye
+You clicked on: Peter Debye
+Fetching HuggingFace Transformers summary...
+Fetching information for Peter Debye...
+Successfully loaded Peter Debye's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Peter Debye
+================================================================================
+Wikipedia: Found
+Content Length: 19,432 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Peter Debye: Peter Joseph William Debye ForMemRS (March 24, 1884 – November 2,
+1966) was a Dutch-American physicist and physical chemist. He was awarded the
+Nobel Prize in Chemistry in 1935. Debye was an avid trout fisherman and
+gardener, collector of cacti, and was "always known to enjoy a nice cigar" He
+was described as a martinet when it came to scientific principles, yet he was
+always approachable and made time for his students. He married Mathilde Alberer
+in 1913.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Irving Langmuir
+You clicked on: Irving Langmuir
+Fetching HuggingFace Transformers summary...
+Fetching information for Irving Langmuir...
+Successfully loaded Irving Langmuir's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Irving Langmuir
+================================================================================
+Wikipedia: Found
+Content Length: 9,079 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Irving Langmuir: Irving Langmuir was an American chemist, physicist, and
+metallurgical engineer. He was awarded the Nobel Prize in Chemistry in 1932 for
+his work in surface chemistry. His most famous publication is the 1919 article
+"The Arrangement of Electrons in Atoms and Molecules" While at General Electric
+from 1909 to 1950, he advanced several fields of physics and chemistry. He
+invented the gas-filled incandescent lamp and the hydrogen welding technique. In
+addition to his professional interest in the politics of atomic energy, he was
+concerned about wilderness conservation.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Martin Knudsen
+You clicked on: Martin Knudsen
+Fetching HuggingFace Transformers summary...
+Fetching information for Martin Knudsen...
+Successfully loaded Martin Knudsen's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Martin Knudsen
+================================================================================
+Wikipedia: Found
+Content Length: 2,123 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Martin Knudsen: Martin Hans Christian Knudsen (15 February 1871 in Hasmark on
+Funen – 27 May 1949 in Copenhagen) was a Danish physicist. He was renowned for
+his work on kinetic-molecular theory and low-pressure phenomena in gases. His
+name is associated with the Knudson flow, Knadsen diffusion, Knodsen number,
+Knudse layer and Knudzen gases. He also developed methods of defining properties
+of seawater. He participated as hydrographer on the Ingolf expedition in the
+North Atlantic in 1895-96.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Hendrik Anthony Kramers
+You clicked on: Hendrik Anthony Kramers
+Fetching HuggingFace Transformers summary...
+Fetching information for Hendrik Anthony Kramers...
+Successfully loaded Hendrik Anthony Kramers's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Hendrik Anthony Kramers
+================================================================================
+Wikipedia: Found
+Content Length: 2,998 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Hendrik Anthony Kramers: Hans Kramers (17 December 1894 – 24 April 1952) was a
+Dutch physicist. He worked with Niels Bohr to understand how electromagnetic
+waves interact with matter. He made important contributions to quantum mechanics
+and statistical physics. He is credited with introducing the concept of
+renormalization into quantum field theory, although his approach was
+nonrelativistic. In 1925, with Werner Heisenberg he developed
+the Kramers–Heisenberg dispersion formula, and in 1926 he was one of the authors
+of the WKB method.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Arthur Compton
+You clicked on: Arthur Compton
+Fetching HuggingFace Transformers summary...
+Fetching information for Arthur Compton...
+Successfully loaded Arthur Compton's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Arthur Compton
+================================================================================
+Wikipedia: Found
+Content Length: 19,526 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Arthur Compton: Arthur Holly Compton (September 10, 1892 – March 15, 1962) was
+an American particle physicist. He won the 1927 Nobel Prize in Physics for his
+discovery of the Compton effect, which demonstrated the particle nature of
+electromagnetic radiation. During World War II, Compton was a key figure in the
+Manhattan Project that developed the first nuclear weapons. He is also known for
+his leadership over the Metallurgical Laboratory at the University of Chicago.
+He served as chancellor of Washington University in St. Louis from 1945 to 1953.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Paul Langevin
+You clicked on: Paul Langevin
+Fetching HuggingFace Transformers summary...
+Fetching information for Paul Langevin...
+Successfully loaded Paul Langevin's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Paul Langevin
+================================================================================
+Wikipedia: Found
+Content Length: 3,852 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Paul Langevin: Paul Langevin (23 January 1872 – 19 December 1946) was a French
+physicist who developed Langevin dynamics and the Langevin equation. He was one
+of the founders of the Comité de vigilance des intellectuels antifascistes, an
+anti-fascist organization. Being a public opponent of fascism in the 1930s
+resulted in his arrest and being held under house arrest by the Vichy government
+for most of World War II. Langevin was also president of the Human Rights League
+from 1944 to 1946, having recently joined the French Communist Party.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Louis de Broglie
+You clicked on: Louis de Broglie
+Fetching HuggingFace Transformers summary...
+Fetching information for Louis de Broglie...
+Successfully loaded Louis de Broglie's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Louis de Broglie
+================================================================================
+Wikipedia: Found
+Content Length: 16,491 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Louis de Broglie: Louis Victor Pierre Raymond, 7th Duc de Broglie (15 August
+1892 – 19 March 1987) was a French theoretical physicist and aristocrat known
+for his contributions to quantum theory. In his 1924 PhD thesis, he postulated
+the wave nature of electrons and suggested that all matter has wave properties.
+This concept is an example of wave-particle duality, and forms a central part of
+the theory of quantum mechanics. He won the Nobel Prize in Physics in 1929,
+after the wave-like behaviour of matter was first experimentally demonstrated.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Charles Wilson
+You clicked on: Charles Wilson
+Fetching HuggingFace Transformers summary...
+Fetching information for Charles Wilson...
+Successfully loaded Charles Wilson's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Charles Wilson
+================================================================================
+Wikipedia: Found
+Content Length: 5,812 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Charles Wilson: Charles Thomson Rees Wilson (14 February 1869 – 15 November
+1959) was a Scottish meteorologist and particle physicist. He shared the 1927
+Nobel Prize in Physics with Arthur Compton for his invention of the cloud
+chamber. Wilson published numerous papers on meteorology and physics, on topics
+including X-rays, ionization, thundercloud formation, and other meteorological
+events. Some have credited Wilson with making the study of particles possible at
+all. Wilson may also have observed a sprite in 1924, 65 years before his death.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+Direct hit on face box: Owen Richardson
+You clicked on: Owen Richardson
+Fetching HuggingFace Transformers summary...
+Fetching information for Owen Richardson...
+Successfully loaded Owen Richardson's page from Wikipedia
+
+================================================================================
+SCIENTIST PROFILE: Owen Richardson
+================================================================================
+Wikipedia: Found
+Content Length: 2,911 characters
+
+HUGGINGFACE TRANSFORMERS SUMMARY:
+--------------------------------------------------------------------------------
+Owen Richardson: Sir Owen Willans Richardson (26 April 1879 – 15 February 1959)
+was an English physicist. He received the Nobel Prize in Physics in 1929 for his
+work on thermionic emission, which led to Richardson's law. In 1901, he
+demonstrated that the current from a heated wire seemed to depend exponentially
+on the temperature of the wire with a mathematical form similar to the Arrhenius
+equation.
+--------------------------------------------------------------------------------
+================================================================================
+Click on another scientist or press 'q' to close!
+================================================================================
+
+No face found at this location. Try clicking directly on any face box!
+
+Interactive session ended.
+Note: For full interactive Wikipedia summaries, run:
+python Interactive_Wikipedia_Tester.py
+
+Process finished with exit code 0
