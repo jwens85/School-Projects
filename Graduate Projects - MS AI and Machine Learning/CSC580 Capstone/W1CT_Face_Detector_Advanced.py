@@ -16,6 +16,9 @@ from typing import Optional, Dict
 import time
 import textwrap
 import warnings
+from urllib.parse import unquote
+import requests
+from bs4 import BeautifulSoup
 try:
     from transformers import pipeline
     TRANSFORMERS_AVAILABLE = True
@@ -23,8 +26,21 @@ except ImportError:
     TRANSFORMERS_AVAILABLE = False
     print("Transformers not available - using fallback summarization")
 
-#Suppress BeautifulSoup parser warnings from Wikipedia library
+#Suppress warnings from various libraries
 warnings.filterwarnings("ignore", category=UserWarning, module="wikipedia")
+warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+warnings.filterwarnings("ignore", message="Your max_length is set to")
+warnings.filterwarnings("ignore", message="Asking to truncate")
+
+#Suppress device messages and all transformers logging
+import os
+os.environ['TRANSFORMERS_VERBOSITY'] = 'error'
+os.environ['TOKENIZERS_PARALLELISM'] = 'false'
+
+# Disable transformers logging completely
+import logging
+logging.getLogger("transformers").setLevel(logging.ERROR)
+logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 
 
 class WikipediaLLMSummarizer:
@@ -34,31 +50,149 @@ class WikipediaLLMSummarizer:
         """Initialize the summarizer with HuggingFace transformers"""
         self.cache = {}  #Cache summaries to avoid repeat API calls
         self.summarizer = None
+        self.verified_urls = self.load_verified_url_mapping()
         
         #Initialize HuggingFace summarization pipeline
         if TRANSFORMERS_AVAILABLE:
             try:
                 print("Loading summarization model... (this may take a moment on first run)")
-                self.summarizer = pipeline(
-                    "summarization", 
-                    model="facebook/bart-large-cnn",
-                    max_length=150,
-                    min_length=50,
-                    do_sample=False
-                )
+                # Check if CUDA is available
+                import torch
+                if torch.cuda.is_available():
+                    device = 0  # Use first GPU
+                    gpu_name = torch.cuda.get_device_name(0)
+                    print(f"Device set to CUDA GPU: {gpu_name}")
+                else:
+                    device = -1  # Fallback to CPU
+                    print("Device set to CPU (CUDA not available)")
+                
+                # Temporarily redirect stderr to suppress device messages
+                import sys
+                old_stderr = sys.stderr
+                sys.stderr = open(os.devnull, 'w')
+                
+                try:
+                    self.summarizer = pipeline(
+                        "summarization", 
+                        model="facebook/bart-large-cnn",
+                        device=device
+                    )
+                finally:
+                    sys.stderr.close()
+                    sys.stderr = old_stderr
+                    
                 print("Summarization model loaded successfully!")
             except Exception as e:
                 print(f"Error loading summarization model: {e}")
                 print("Falling back to simple text extraction")
                 self.summarizer = None
+    
+    def load_verified_url_mapping(self):
+        """Load the verified Wikipedia URL mapping from JSON file"""
+        try:
+            mapping_path = "/home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/wikipedia_url_mapping.json"
+            with open(mapping_path, 'r') as f:
+                url_mapping = json.load(f)
+            print(f"Loaded verified URLs for {len(url_mapping)} scientists")
+            return url_mapping
+        except Exception as e:
+            print(f"Could not load verified URL mapping: {e}")
+            return {}
         
     def fetch_wikipedia_content(self, scientist_name: str) -> Optional[str]:
-        """Fetch Wikipedia page content for a scientist"""
+        """Fetch Wikipedia page content for a scientist using verified URLs"""
         try:
             #Set Wikipedia language to English explicitly
             wikipedia.set_lang("en")
             
-            #Handle common name variations for Solvay scientists
+            # First priority: Use verified URLs from WikiFinder.py with direct HTTP request
+            if scientist_name in self.verified_urls:
+                verified_url = self.verified_urls[scientist_name]
+                try:
+                    # Use direct HTTP request since the URLs work when clicked
+                    response = requests.get(verified_url, timeout=10)
+                    response.raise_for_status()
+                    
+                    # Parse the HTML to extract text content
+                    soup = BeautifulSoup(response.content, 'html.parser')
+                    
+                    # Remove unwanted elements
+                    for element in soup(['script', 'style', 'sup', 'table']):
+                        element.decompose()
+                    
+                    # Extract main content from Wikipedia page
+                    content_div = soup.find('div', {'id': 'mw-content-text'})
+                    if content_div:
+                        # Get all paragraphs from the main content
+                        paragraphs = content_div.find_all('p')
+                        text_content = '\n\n'.join([p.get_text().strip() for p in paragraphs if p.get_text().strip()])
+                        
+                        if text_content:
+                            print(f"Successfully loaded {scientist_name}'s page from Wikipedia")
+                            return text_content
+                    
+                    # Fallback: get all text if structured extraction fails
+                    text_content = soup.get_text()
+                    if text_content and len(text_content) > 500:
+                        print(f"Successfully loaded {scientist_name}'s page from Wikipedia (fallback)")
+                        return text_content
+                        
+                except Exception as e:
+                    print(f"Error with direct HTTP request for {scientist_name}: {e}")
+                    # Fall through to backup methods
+            
+            # Backup: Direct Wikipedia page mappings for 1927 Solvay Conference participants
+            # NOTE: These are now backup only - verified URLs from WikiFinder.py take priority
+            direct_page_mappings = {
+                # Front Row
+                "Irving Langmuir": "Irving_Langmuir",
+                "Max Planck": "Max_Planck",
+                "Marie Curie": "Marie_Curie",
+                "Hendrik Lorentz": "Hendrik_Lorentz",
+                "Albert Einstein": "Albert_Einstein",
+                "Paul Langevin": "Paul_Langevin",
+                "Charles Eugene Guye": "Charles-Eugène_Guye",
+                "Charles Wilson": "Charles_Thomson_Rees_Wilson",
+                "CTR Wilson": "Charles_Thomson_Rees_Wilson",
+                "Owen Richardson": "Owen_Willans_Richardson",
+                
+                # Middle Row
+                "Peter Debye": "Peter_Debye",
+                "Martin Knudsen": "Martin_Knudsen",
+                "William Lawrence Bragg": "Lawrence_Bragg",
+                "Hendrik Anthony Kramers": "Hendrik_Kramers",
+                "Paul Dirac": "Paul_Dirac",
+                "Arthur Compton": "Arthur_Compton",
+                "Louis de Broglie": "Louis_de_Broglie",
+                "Max Born": "Max_Born",
+                "Niels Bohr": "Niels_Bohr",
+                
+                # Back Row
+                "Auguste Piccard": "Auguste_Piccard",
+                "Emile Henriot": "Émile_Henriot",
+                "Paul Ehrenfest": "Paul_Ehrenfest",
+                "Edouard Herzen": "Édouard_Herzen",
+                "Theophile de Donder": "Théophile_de_Donder",
+                "Erwin Schrodinger": "Erwin_Schrödinger",
+                "Jules Emile Verschaffelt": "Jules-Émile_Verschaffelt",
+                "JE Verschaffelt": "Jules-Émile_Verschaffelt",
+                "Wolfgang Pauli": "Wolfgang_Pauli",
+                "Werner Heisenberg": "Werner_Heisenberg",
+                "Ralph Fowler": "Ralph_Fowler",
+                "Leon Brillouin": "Léon_Brillouin"
+            }
+            
+            #Check if we have a direct mapping
+            if scientist_name in direct_page_mappings:
+                page_title = direct_page_mappings[scientist_name]
+                try:
+                    page = wikipedia.page(page_title)
+                    return page.content
+                except Exception as e:
+                    print(f"Error fetching direct page {page_title}: {e}")
+                    # Fall through to original logic
+            
+            #Fallback to original name mappings for backwards compatibility
             name_mappings = {
                 "Charles Wilson": "Charles Thomson Rees Wilson",
                 "CTR Wilson": "Charles Thomson Rees Wilson", 
@@ -256,58 +390,106 @@ class WikipediaLLMSummarizer:
             
             if self.summarizer and len(scientific_content) > 100:
                 #Use HuggingFace BART model for summarization
-                #Adjust max_length based on input length to avoid warnings
+                #Calculate appropriate lengths based on input
                 input_length = len(scientific_content.split())
-                max_length = min(150, max(30, input_length // 2))
-                min_length = min(30, max_length // 3)
                 
-                summary_result = self.summarizer(
-                    scientific_content,
-                    max_length=max_length,
-                    min_length=min_length,
-                    do_sample=False
-                )
-                summary = summary_result[0]['summary_text']
+                #Suppress warnings temporarily
+                import logging
+                logging.getLogger("transformers").setLevel(logging.ERROR)
+                
+                try:
+                    #Set appropriate length parameters for a concise paragraph
+                    if input_length < 150:
+                        #For short content, use the content as-is or with minimal summarization
+                        max_len = min(input_length + 20, 200)
+                        min_len = min(80, input_length - 10)
+                    else:
+                        #For longer content, create a proper summary
+                        max_len = 200
+                        min_len = 100
+                    
+                    summary_result = self.summarizer(
+                        scientific_content,
+                        max_length=max_len,
+                        min_length=min_len,
+                        do_sample=False,
+                        truncation=True,
+                        clean_up_tokenization_spaces=True
+                    )
+                    summary = summary_result[0]['summary_text']
+                finally:
+                    #Restore logging level
+                    logging.getLogger("transformers").setLevel(logging.WARNING)
+                
+                #Ensure the summary ends with proper punctuation
+                if summary and not summary.endswith(('.', '!', '?')):
+                    #Find the last complete sentence
+                    last_period = summary.rfind('.')
+                    if last_period > 50:  #Keep at least some content
+                        summary = summary[:last_period + 1]
+                    else:
+                        summary += '.'
                 
                 #Add context about the scientist
                 enhanced_summary = f"{scientist_name}: {summary}"
                 
             else:
                 #Fallback: Extract meaningful content and ensure complete sentences
-                paragraphs = scientific_content.split('. ')
-                summary_sentences = []
+                sentences = []
+                
+                #Split content into sentences more carefully
+                import re
+                sentence_endings = re.split(r'(?<=[.!?])\s+', scientific_content)
                 
                 #Look for key biographical and scientific information
-                for sentence in paragraphs[:6]:
+                keywords = ['discovered', 'developed', 'theory', 'known for', 'invented', 
+                           'research', 'physicist', 'chemist', 'scientist', 'professor', 
+                           'born', 'studied', 'contribution', 'work', 'pioneer', 'nobel',
+                           'award', 'founded', 'principle', 'equation', 'effect']
+                
+                for sentence in sentence_endings[:20]:  #Check more sentences
                     sentence = sentence.strip()
-                    if len(sentence) > 20 and any(word in sentence.lower() for word in 
-                        ['discovered', 'developed', 'theory', 'known for', 'invented', 'research', 
-                         'physicist', 'chemist', 'scientist', 'professor', 'born', 'studied']):
+                    if len(sentence) > 30 and any(word in sentence.lower() for word in keywords):
                         #Ensure sentence ends properly
-                        if not sentence.endswith('.'):
+                        if not sentence.endswith(('.', '!', '?')):
                             sentence += '.'
-                        summary_sentences.append(sentence)
+                        sentences.append(sentence)
                         
-                if summary_sentences:
-                    #Join sentences and ensure we have complete thoughts
-                    summary_text = ' '.join(summary_sentences[:3])
+                        #Stop when we have enough content for a paragraph
+                        if len(' '.join(sentences)) > 150:
+                            break
+                
+                if sentences:
+                    #Create a coherent paragraph from the best sentences
+                    summary_text = ' '.join(sentences[:5])  #Up to 5 sentences
+                    
+                    #Ensure it's not too long and ends properly
+                    if len(summary_text) > 400:
+                        #Truncate at last complete sentence within 400 chars
+                        last_sentence_end = max(
+                            summary_text[:400].rfind('.'),
+                            summary_text[:400].rfind('!'),
+                            summary_text[:400].rfind('?')
+                        )
+                        if last_sentence_end > 100:
+                            summary_text = summary_text[:last_sentence_end + 1]
+                    
                     enhanced_summary = f"{scientist_name}: {summary_text}"
                 else:
-                    #Last resort: use first substantial paragraph
-                    first_substantial = ""
-                    for para in scientific_content.split('\n'):
-                        if len(para.strip()) > 50:
-                            first_substantial = para.strip()[:300]
+                    #Last resort: use first paragraph of content
+                    paragraphs = scientific_content.split('\n\n')
+                    for para in paragraphs:
+                        if len(para.strip()) > 100:
+                            para = para.strip()
+                            #Ensure complete sentences
+                            if not para.endswith(('.', '!', '?')):
+                                last_punct = max(para.rfind('.'), para.rfind('!'), para.rfind('?'))
+                                if last_punct > 50:
+                                    para = para[:last_punct + 1]
+                            enhanced_summary = f"{scientist_name}: {para[:350]}"
                             break
-                    
-                    if first_substantial:
-                        #Ensure it ends at a sentence boundary
-                        last_period = first_substantial.rfind('.')
-                        if last_period > 100:
-                            first_substantial = first_substantial[:last_period + 1]
-                        enhanced_summary = f"{scientist_name}: {first_substantial}"
                     else:
-                        enhanced_summary = f"{scientist_name}: A prominent scientist featured at the 1927 Solvay Conference."
+                        enhanced_summary = f"{scientist_name}: A prominent physicist and participant in the 1927 Solvay Conference on Electrons and Photons, which brought together the world's leading quantum physicists."
             
             #Cache the result
             self.cache[scientist_name] = enhanced_summary
@@ -1286,10 +1468,10 @@ class EnhancedSolvayFaceRecognizer:
                 #Get ground truth name for this face location
                 ground_truth_name = self.find_closest_manual_face([top, right, bottom, left])
                 if ground_truth_name and ground_truth_name != "Unknown Position":
-                    print(f"Direct hit on face box - Ground truth: {ground_truth_name}")
+                    print(f"Direct hit on face box: {ground_truth_name}")
                     return ground_truth_name
                 else:
-                    print(f"Direct hit on face box - Predicted: {face_data['name']} (no ground truth)")
+                    print(f"Direct hit on face box: {face_data['name']}")
                     return face_data['name']
         
         #If no direct hit, check with margins but be more selective
@@ -1327,24 +1509,16 @@ class EnhancedSolvayFaceRecognizer:
         
         #If multiple matches, use smarter logic
         if potential_matches:
-            #Debug output
-            if len(potential_matches) > 1:
-                print(f"Multiple potential matches at ({click_x}, {click_y}):")
-                for match in potential_matches:
-                    print(f"  - {match[0]}: distance={match[1]:.1f}, above_face={match[3]}")
-            
             #If click is above faces (in label area), prefer the face whose horizontal center is closest
             above_face_matches = [m for m in potential_matches if m[3]]
             if above_face_matches:
                 #For label clicks, use horizontal distance only
                 best_match = min(above_face_matches, key=lambda m: abs(click_x - ((m[2]['location'][3] + m[2]['location'][1]) / 2)))
-                print(f"Selected from label area: {best_match[0]}")
                 return best_match[0]
             
             #Otherwise, return the closest match by euclidean distance
             potential_matches.sort(key=lambda x: x[1])
             closest_match = potential_matches[0]
-            print(f"Selected by distance: {closest_match[0]}")
             return closest_match[0]
         
         return None
