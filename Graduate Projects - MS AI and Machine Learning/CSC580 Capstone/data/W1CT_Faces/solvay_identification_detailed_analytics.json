@@ -3,8 +3,9 @@
     "Leon Brillouin": 1,
     "Wolfgang Pauli": 1,
     "Hendrik Anthony Kramers": 1,
-    "Unknown": 7,
+    "Unknown": 6,
     "Owen Richardson": 1,
+    "Louis de Broglie": 1,
     "Max Born": 1,
     "Niels Bohr": 1,
     "Albert Einstein": 1,
@@ -47,7 +48,7 @@
       "min_confidence": 0.5584786535752724
     },
     "Unknown": {
-      "count": 7,
+      "count": 6,
       "mean_confidence": 0.0,
       "std_confidence": 0.0,
       "max_confidence": 0.0,
@@ -59,6 +60,13 @@
       "std_confidence": 0.0,
       "max_confidence": 0.5434821474237184,
       "min_confidence": 0.5434821474237184
+    },
+    "Louis de Broglie": {
+      "count": 1,
+      "mean_confidence": 0.514384654097058,
+      "std_confidence": 0.0,
+      "max_confidence": 0.514384654097058,
+      "min_confidence": 0.514384654097058
     },
     "Max Born": {
       "count": 1,
@@ -188,6 +196,6 @@
     }
   },
   "total_faces": 29,
-  "identified_faces": 22,
-  "success_rate": 75.86206896551724
+  "identified_faces": 23,
+  "success_rate": 79.3103448275862
 }
