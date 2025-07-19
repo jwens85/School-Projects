@@ -1,0 +1,292 @@
+{
+  "1": {
+    "face_number": 1,
+    "location": [
+      761,
+      569,
+      868,
+      462
+    ],
+    "ground_truth": "Auguste Piccard"
+  },
+  "2": {
+    "face_number": 2,
+    "location": [
+      851,
+      768,
+      926,
+      693
+    ],
+    "ground_truth": "Emile Henriot"
+  },
+  "3": {
+    "face_number": 3,
+    "location": [
+      902,
+      922,
+      992,
+      832
+    ],
+    "ground_truth": "Paul Ehrenfest"
+  },
+  "4": {
+    "face_number": 4,
+    "location": [
+      892,
+      1171,
+      982,
+      1081
+    ],
+    "ground_truth": "Edouard Herzen"
+  },
+  "5": {
+    "face_number": 5,
+    "location": [
+      918,
+      1440,
+      992,
+      1365
+    ],
+    "ground_truth": "Theophile de Donder"
+  },
+  "6": {
+    "face_number": 6,
+    "location": [
+      853,
+      1668,
+      942,
+      1579
+    ],
+    "ground_truth": "Erwin Schrodinger"
+  },
+  "7": {
+    "face_number": 7,
+    "location": [
+      873,
+      1927,
+      962,
+      1837
+    ],
+    "ground_truth": "Jules Emile Verschaffelt"
+  },
+  "8": {
+    "face_number": 8,
+    "location": [
+      863,
+      2166,
+      952,
+      2076
+    ],
+    "ground_truth": "Wolfgang Pauli"
+  },
+  "9": {
+    "face_number": 9,
+    "location": [
+      860,
+      2369,
+      934,
+      2294
+    ],
+    "ground_truth": "Werner Heisenberg"
+  },
+  "10": {
+    "face_number": 10,
+    "location": [
+      763,
+      2534,
+      853,
+      2445
+    ],
+    "ground_truth": "Ralph Fowler"
+  },
+  "11": {
+    "face_number": 11,
+    "location": [
+      853,
+      2674,
+      942,
+      2584
+    ],
+    "ground_truth": "Leon Brillouin"
+  },
+  "12": {
+    "face_number": 12,
+    "location": [
+      1052,
+      225,
+      1141,
+      135
+    ],
+    "ground_truth": "Peter Debye"
+  },
+  "13": {
+    "face_number": 13,
+    "location": [
+      1151,
+      325,
+      1241,
+      235
+    ],
+    "ground_truth": "Irving Langmuir"
+  },
+  "14": {
+    "face_number": 14,
+    "location": [
+      1091,
+      504,
+      1181,
+      414
+    ],
+    "ground_truth": "Martin Knudsen"
+  },
+  "15": {
+    "face_number": 15,
+    "location": [
+      1171,
+      633,
+      1261,
+      544
+    ],
+    "ground_truth": "Max Planck"
+  },
+  "16": {
+    "face_number": 16,
+    "location": [
+      1062,
+      802,
+      1151,
+      713
+    ],
+    "ground_truth": "William Lawrence Bragg"
+  },
+  "17": {
+    "face_number": 17,
+    "location": [
+      1161,
+      942,
+      1251,
+      852
+    ],
+    "ground_truth": "Marie Curie"
+  },
+  "18": {
+    "face_number": 18,
+    "location": [
+      1047,
+      1142,
+      1155,
+      1035
+    ],
+    "ground_truth": "Hendrik Anthony Kramers"
+  },
+  "19": {
+    "face_number": 19,
+    "location": [
+      1167,
+      1286,
+      1274,
+      1178
+    ],
+    "ground_truth": "Hendrik Lorentz"
+  },
+  "20": {
+    "face_number": 20,
+    "location": [
+      1042,
+      1489,
+      1117,
+      1415
+    ],
+    "ground_truth": "Paul Dirac"
+  },
+  "21": {
+    "face_number": 21,
+    "location": [
+      1151,
+      1678,
+      1241,
+      1589
+    ],
+    "ground_truth": "Albert Einstein"
+  },
+  "22": {
+    "face_number": 22,
+    "location": [
+      1052,
+      1758,
+      1141,
+      1668
+    ],
+    "ground_truth": "Arthur Compton"
+  },
+  "23": {
+    "face_number": 23,
+    "location": [
+      1143,
+      1955,
+      1250,
+      1847
+    ],
+    "ground_truth": "Paul Langevin"
+  },
+  "24": {
+    "face_number": 24,
+    "location": [
+      1072,
+      2037,
+      1161,
+      1947
+    ],
+    "ground_truth": "Louis de Broglie"
+  },
+  "25": {
+    "face_number": 25,
+    "location": [
+      1143,
+      2205,
+      1250,
+      2098
+    ],
+    "ground_truth": "Charles Eugene Guye"
+  },
+  "26": {
+    "face_number": 26,
+    "location": [
+      1071,
+      2373,
+      1179,
+      2265
+    ],
+    "ground_truth": "Max Born"
+  },
+  "27": {
+    "face_number": 27,
+    "location": [
+      1171,
+      2534,
+      1261,
+      2445
+    ],
+    "ground_truth": "Charles Thomson Rees Wilson"
+  },
+  "28": {
+    "face_number": 28,
+    "location": [
+      1083,
+      2671,
+      1191,
+      2564
+    ],
+    "ground_truth": "Niels Bohr"
+  },
+  "29": {
+    "face_number": 29,
+    "location": [
+      1191,
+      2779,
+      1298,
+      2671
+    ],
+    "ground_truth": "Owen Richardson"
+  }
+}
