@@ -301,6 +301,11 @@ class EnhancedSolvayFaceRecognizer:
             #Get ground truth name from manual mapping
             ground_truth_name = self.find_closest_manual_face(face_location)
 
+            #Check if this is a misidentification
+            is_misidentified = (face['name'] != "Unknown" and 
+                              ground_truth_name != "Unknown Position" and 
+                              face['name'] != ground_truth_name)
+
             #Draw prediction label
             prediction_text = f"{face['name']} ({face['confidence']:.2f})"
             pred_text_bbox = draw.textbbox((0, 0), prediction_text, font=font)
@@ -321,9 +326,13 @@ class EnhancedSolvayFaceRecognizer:
             draw.rectangle([left, top - total_height, left + total_width, top - gt_text_height - 10],
                          fill=color, outline=color)
             
-            #Draw ground truth background (green)
+            #Draw ground truth background (green, with red border if misidentified)
+            gt_fill_color = "green"
+            gt_outline_color = "red" if is_misidentified else "green"
+            gt_outline_width = 3 if is_misidentified else 1
+            
             draw.rectangle([left, top - gt_text_height - 10, left + total_width, top],
-                         fill="green", outline="green")
+                         fill=gt_fill_color, outline=gt_outline_color, width=gt_outline_width)
 
             #Draw texts
             draw.text((left + 5, top - total_height + 5), prediction_text, fill="white", font=font)
@@ -336,57 +345,67 @@ class EnhancedSolvayFaceRecognizer:
 
     def add_ground_truth_box(self, pil_image, identified_faces, draw, font):
         """Add ground truth comparison box in top right corner"""
-        #Define ground truth positions (back to front, left to right)
-        ground_truth = [
-            #Back row (positions 1-11)
-            "Auguste Piccard", "Émile Henriot", "Paul Ehrenfest", "Édouard Herzen",
-            "Théophile de Donder", "Erwin Schrödinger", "Jules-Émile Verschaffelt",
-            "Wolfgang Pauli", "Werner Heisenberg", "Ralph Howard Fowler", "Léon Brillouin",
-            #Middle row (positions 12-20)
-            "Peter Debye", "Martin Knudsen", "William Lawrence Bragg", "Hendrik Anthony Kramers",
-            "Paul Dirac", "Arthur Compton", "Louis de Broglie", "Max Born", "Niels Bohr",
-            #Front row (positions 21-29)
-            "Irving Langmuir", "Max Planck", "Marie Skłodowska Curie", "Hendrik Lorentz",
-            "Albert Einstein", "Paul Langevin", "Charles-Eugène Guye", "Charles Thomson Rees Wilson",
-            "Owen Willans Richardson"
-        ]
-
-        #Count correct identifications
-        identified_names = [face['name'] for face in identified_faces if face['name'] != 'Unknown']
-        correct_identifications = sum(1 for name in identified_names if name in ground_truth or
-                                    name == "Marie Curie" and "Marie Skłodowska Curie" in ground_truth)
-        total_scientists = len(ground_truth)
-        accuracy = (correct_identifications / total_scientists) * 100
+        #Count correct vs incorrect identifications using manual ground truth
+        correct_identifications = 0
+        incorrect_identifications = 0
+        unknown_faces = 0
+        total_faces = len(identified_faces)
+        
+        for face in identified_faces:
+            predicted_name = face['name']
+            face_location = [face["location"][0], face["location"][1], face["location"][2], face["location"][3]]
+            ground_truth_name = self.find_closest_manual_face(face_location)
+            
+            if predicted_name == "Unknown":
+                unknown_faces += 1
+            elif ground_truth_name != "Unknown Position" and predicted_name == ground_truth_name:
+                correct_identifications += 1
+            else:
+                incorrect_identifications += 1
+        
+        # Calculate accuracy based on faces that were actually identified (not Unknown)
+        identified_faces_count = total_faces - unknown_faces
+        accuracy = (correct_identifications / identified_faces_count * 100) if identified_faces_count > 0 else 0
+        unidentified_count = unknown_faces + incorrect_identifications
 
         #Get image dimensions
         img_width, img_height = pil_image.size
 
-        #Box dimensions and position (top right corner)
-        box_width = 320
-        box_height = 140
-        box_x = img_width - box_width - 20
-        box_y = 20
+        #Box dimensions and position (top right corner) - much larger
+        box_width = 800
+        box_height = 320
+        box_x = img_width - box_width - 30
+        box_y = 30
+
+        #Create larger font for the box
+        try:
+            large_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 24)
+            title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 28)
+        except:
+            large_font = font
+            title_font = font
 
         #Draw semi-transparent background
         draw.rectangle([box_x, box_y, box_x + box_width, box_y + box_height],
-                      fill=(0, 0, 0, 180), outline="white", width=2)
+                      fill=(0, 0, 0, 180), outline="white", width=3)
 
-        #Title
+        #Title - larger font
         title_text = "Ground Truth Comparison"
-        draw.text((box_x + 10, box_y + 10), title_text, fill="white", font=font)
+        draw.text((box_x + 25, box_y + 25), title_text, fill="white", font=title_font)
 
-        #Statistics
-        stats_y = box_y + 35
+        #Statistics - with more spacing and larger font
+        stats_y = box_y + 70
         stats_text = [
-            f"Total Scientists: {total_scientists}",
+            f"Total Faces Detected: {total_faces}",
             f"Correctly Identified: {correct_identifications}",
-            f"Accuracy: {accuracy:.1f}%",
-            f"False Positives: 0",
-            f"Unidentified: {total_scientists - correct_identifications}"
+            f"Incorrectly Identified: {incorrect_identifications}",
+            f"Unknown/Unidentified: {unidentified_count}",
+            f"Accuracy (of identified): {accuracy:.1f}%",
+            f"Overall Success Rate: {(correct_identifications/total_faces*100):.1f}%"
         ]
 
         for i, text in enumerate(stats_text):
-            draw.text((box_x + 10, stats_y + i * 20), text, fill="white", font=font)
+            draw.text((box_x + 25, stats_y + i * 35), text, fill="white", font=large_font)
 
     def generate_analytics(self, identified_faces):
         """Generate detailed analytics about the recognition results"""
