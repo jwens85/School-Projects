@@ -6,6 +6,7 @@
     "Unknown": 6,
     "Owen Richardson": 1,
     "Louis de Broglie": 1,
+    "Hendrik Lorentz": 1,
     "Max Born": 1,
     "Niels Bohr": 1,
     "Albert Einstein": 1,
@@ -13,7 +14,6 @@
     "Charles Wilson": 1,
     "Marie Curie": 1,
     "Paul Ehrenfest": 1,
-    "Irving Langmuir": 1,
     "Erwin Schrodinger": 1,
     "Paul Dirac": 1,
     "Martin Knudsen": 1,
@@ -68,6 +68,13 @@
       "max_confidence": 0.514384654097058,
       "min_confidence": 0.514384654097058
     },
+    "Hendrik Lorentz": {
+      "count": 1,
+      "mean_confidence": 0.5459007285243964,
+      "std_confidence": 0.0,
+      "max_confidence": 0.5459007285243964,
+      "min_confidence": 0.5459007285243964
+    },
     "Max Born": {
       "count": 1,
       "mean_confidence": 0.5371139087054653,
@@ -116,13 +123,6 @@
       "std_confidence": 0.0,
       "max_confidence": 0.507226879923023,
       "min_confidence": 0.507226879923023
-    },
-    "Irving Langmuir": {
-      "count": 1,
-      "mean_confidence": 0.4636935926034015,
-      "std_confidence": 0.0,
-      "max_confidence": 0.4636935926034015,
-      "min_confidence": 0.4636935926034015
     },
     "Erwin Schrodinger": {
       "count": 1,

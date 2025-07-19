@@ -21,7 +21,7 @@
       2076
     ],
     "face_number": 2,
-    "best_match_index": 40
+    "best_match_index": 41
   },
   {
     "name": "Hendrik Anthony Kramers",
@@ -69,11 +69,11 @@
       1947
     ],
     "face_number": 6,
-    "best_match_index": 32
+    "best_match_index": 33
   },
   {
-    "name": "Unknown",
-    "confidence": 0.0,
+    "name": "Hendrik Lorentz",
+    "confidence": 0.5459007285243964,
     "location": [
       1167,
       1286,
@@ -81,7 +81,7 @@
       1178
     ],
     "face_number": 7,
-    "best_match_index": -1
+    "best_match_index": 38
   },
   {
     "name": "Unknown",
@@ -192,8 +192,8 @@
     "best_match_index": 25
   },
   {
-    "name": "Irving Langmuir",
-    "confidence": 0.4636935926034015,
+    "name": "Unknown",
+    "confidence": 0.0,
     "location": [
       1151,
       325,
@@ -201,7 +201,7 @@
       235
     ],
     "face_number": 17,
-    "best_match_index": 23
+    "best_match_index": -1
   },
   {
     "name": "Erwin Schrodinger",
@@ -249,7 +249,7 @@
       414
     ],
     "face_number": 21,
-    "best_match_index": 39
+    "best_match_index": 40
   },
   {
     "name": "Max Planck",
