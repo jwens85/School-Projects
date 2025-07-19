@@ -441,7 +441,7 @@ class EnhancedSolvayFaceRecognizer:
         annotated_image, identified_faces = self.detect_and_identify_faces(solvay_photo_path)
 
         #Save results
-        output_path = "/home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay_enhanced_identification.png"
+        output_path = "/home/jwens/PycharmProjects/School-Projects/Graduate Projects - MS AI and Machine Learning/CSC580 Capstone/data/W1CT_Faces/solvay_identification.png"
         self.save_results(annotated_image, identified_faces, output_path)
 
         #Generate analytics
