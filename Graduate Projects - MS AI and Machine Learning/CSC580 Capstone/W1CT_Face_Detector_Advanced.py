@@ -1263,86 +1263,88 @@ class EnhancedSolvayFaceRecognizer:
             clicked_scientist = self.find_scientist_at_coordinates(original_x, original_y)
             
             if clicked_scientist:
-                if clicked_scientist == "Unknown":
-                    #For unknown faces, find the actual Unknown face that was clicked and get its ground truth
-                    ground_truth_name = None
-                    
-                    #Find the Unknown face that was clicked by looking through our face data
-                    for face_data in self.identified_faces_data:
-                        if face_data['name'] == 'Unknown':
-                            top, right, bottom, left = face_data['location']
-                            
-                            #Check if this is the Unknown face that was clicked (within clickable area)
-                            margin = 100
-                            if (left - margin <= original_x <= right + margin and 
-                                top - 120 <= original_y <= bottom + margin):
-                                
-                                #Use this face's location for ground truth lookup
-                                ground_truth_name = self.find_closest_manual_face([top, right, bottom, left])
-                                break
-                    
-                    if ground_truth_name and ground_truth_name != "Unknown Position":
-                        print(f"You clicked on: {ground_truth_name}")
-                        print("Fetching HuggingFace Transformers summary...")
-                        
-                        #Get AI summary using ground truth name
-                        summary_data = self.wikipedia_summarizer.get_scientist_summary(ground_truth_name)
-                        
-                        #Display the summary
-                        self.display_scientist_summary(summary_data)
-                    else:
-                        print("You clicked on an unidentified face with no ground truth mapping.")
-                        print("Try clicking on a face with a green name label for HuggingFace Transformers summaries!")
-                else:
-                    print(f"You clicked on: {clicked_scientist}")
-                    print("Fetching HuggingFace Transformers summary...")
-                    
-                    #Get AI summary
-                    summary_data = self.wikipedia_summarizer.get_scientist_summary(clicked_scientist)
-                    
-                    #Display the summary
-                    self.display_scientist_summary(summary_data)
+                print(f"You clicked on: {clicked_scientist}")
+                print("Fetching HuggingFace Transformers summary...")
+                
+                #Get AI summary
+                summary_data = self.wikipedia_summarizer.get_scientist_summary(clicked_scientist)
+                
+                #Display the summary
+                self.display_scientist_summary(summary_data)
             else:
                 print("No face found at this location. Try clicking directly on any face box!")
     
     def find_scientist_at_coordinates(self, click_x: float, click_y: float) -> Optional[str]:
-        """Find which scientist was clicked based on coordinates"""
+        """Find which scientist was clicked based on coordinates and return ground truth name"""
         
-        #Find all potential matches and their distances from click
+        #First, check if click is directly within any face box (no margin)
+        for face_data in self.identified_faces_data:
+            top, right, bottom, left = face_data['location']
+            
+            #Check if click is directly within the face box
+            if (left <= click_x <= right and top <= click_y <= bottom):
+                #Get ground truth name for this face location
+                ground_truth_name = self.find_closest_manual_face([top, right, bottom, left])
+                if ground_truth_name and ground_truth_name != "Unknown Position":
+                    print(f"Direct hit on face box - Ground truth: {ground_truth_name}")
+                    return ground_truth_name
+                else:
+                    print(f"Direct hit on face box - Predicted: {face_data['name']} (no ground truth)")
+                    return face_data['name']
+        
+        #If no direct hit, check with margins but be more selective
         potential_matches = []
         
         for face_data in self.identified_faces_data:
-            name = face_data['name']
-            
             #Get face location [top, right, bottom, left]
             top, right, bottom, left = face_data['location']
             
-            #Create clickable area covering the entire face box and labels
-            margin = 100  #Margin for easier clicking
-            clickable_left = left - margin
-            clickable_right = right + margin  
-            clickable_top = top - 120  #Extra space above for text labels
-            clickable_bottom = bottom + margin
+            #Create clickable area with smaller margin to reduce overlap
+            margin_x = 30  #Reduced horizontal margin
+            margin_y = 50  #Vertical margin for labels
+            clickable_left = left - margin_x
+            clickable_right = right + margin_x  
+            clickable_top = top - 80  #Space above for text labels
+            clickable_bottom = bottom + margin_y
             
             #Check if click is within this scientist's area
             if (clickable_left <= click_x <= clickable_right and 
                 clickable_top <= click_y <= clickable_bottom):
+                
+                #Get ground truth name for this face
+                ground_truth_name = self.find_closest_manual_face([top, right, bottom, left])
+                display_name = ground_truth_name if (ground_truth_name and ground_truth_name != "Unknown Position") else face_data['name']
                 
                 #Calculate distance from click to face center
                 face_center_x = (left + right) / 2
                 face_center_y = (top + bottom) / 2
                 distance = ((click_x - face_center_x) ** 2 + (click_y - face_center_y) ** 2) ** 0.5
                 
-                potential_matches.append((name, distance, face_data))
+                #Also calculate if click is above or below face (for label clicks)
+                is_above_face = click_y < top
+                
+                potential_matches.append((display_name, distance, face_data, is_above_face))
         
-        #If multiple matches, return the one closest to the actual face center
+        #If multiple matches, use smarter logic
         if potential_matches:
-            #Sort by distance and return the closest match
+            #Debug output
+            if len(potential_matches) > 1:
+                print(f"Multiple potential matches at ({click_x}, {click_y}):")
+                for match in potential_matches:
+                    print(f"  - {match[0]}: distance={match[1]:.1f}, above_face={match[3]}")
+            
+            #If click is above faces (in label area), prefer the face whose horizontal center is closest
+            above_face_matches = [m for m in potential_matches if m[3]]
+            if above_face_matches:
+                #For label clicks, use horizontal distance only
+                best_match = min(above_face_matches, key=lambda m: abs(click_x - ((m[2]['location'][3] + m[2]['location'][1]) / 2)))
+                print(f"Selected from label area: {best_match[0]}")
+                return best_match[0]
+            
+            #Otherwise, return the closest match by euclidean distance
             potential_matches.sort(key=lambda x: x[1])
             closest_match = potential_matches[0]
-            
-            #Return the closest match
-            
+            print(f"Selected by distance: {closest_match[0]}")
             return closest_match[0]
         
         return None
