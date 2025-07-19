@@ -67,6 +67,7 @@ class EnhancedSolvayFaceRecognizer:
         for scientist_folder in reference_dir.iterdir():
             if scientist_folder.is_dir():
                 scientist_name = scientist_folder.name.replace("_", " ")
+                loaded_count = 0
 
                 #Load images from scientist's folder
                 for img_file in scientist_folder.glob("*"):
@@ -80,7 +81,7 @@ class EnhancedSolvayFaceRecognizer:
                                 #Use the first face found
                                 self.known_encodings.append(encodings[0])
                                 self.known_names.append(scientist_name)
-                                print(f"Loaded reference image for {scientist_name}")
+                                loaded_count += 1
                             else:
                                 #Try with preprocessing if normal method fails
                                 try:
@@ -89,13 +90,17 @@ class EnhancedSolvayFaceRecognizer:
                                     if encodings:
                                         self.known_encodings.append(encodings[0])
                                         self.known_names.append(scientist_name)
-                                        print(f"Loaded reference image for {scientist_name} (with preprocessing)")
+                                        loaded_count += 1
                                     else:
                                         print(f"No face found in {img_file}")
                                 except:
                                     print(f"No face found in {img_file}")
                         except Exception as e:
                             print(f"Error loading {img_file}: {e}")
+
+                #Print summary for this scientist
+                if loaded_count > 0:
+                    print(f"Loaded {loaded_count} reference images for {scientist_name}")
 
     def remove_duplicate_faces(self, face_locations, overlap_threshold=0.5):
         """Remove duplicate face detections based on overlap"""
