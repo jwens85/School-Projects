@@ -118,9 +118,9 @@ Content Length: 82,123 characters
 
 HUGGINGFACE TRANSFORMERS SUMMARY:
 --------------------------------------------------------------------------------
-Albert Einstein: Albert Einstein (14 March 1879 – 18 April 1955) was a German-
+Albert Einstein: Albert Einstein (14 March 1879 – 18 April 1955) was a German-
 born theoretical physicist. He is best known for developing the theory of
-relativity. His mass–energy equivalence formula E = mc, which arises from
+relativity. His mass–energy equivalence formula E = mc^2, which arises from
 special relativity, has been called "the world's most famous equation" He
 received the 1921 Nobel Prize in Physics for his services to theoretical
 physics. In 1905, sometimes described as his annus mirabilis (miracle year), he
@@ -147,7 +147,7 @@ HUGGINGFACE TRANSFORMERS SUMMARY:
 Erwin Schrodinger: Erwin Rudolf Josef Alexander Schrödinger (12 August 1887 – 4
 January 1961) was an Austrian-Irish theoretical physicist. He won the Nobel
 Prize in Physics in 1933 for his work on quantum mechanics. In popular culture,
-he is best known for his "SchröDinger's cat" thought experiment. He also wrote
+he is best known for his "Schrödinger's cat" thought experiment. He also wrote
 on philosophy and theoretical biology. He was accused of sexually abusing
 several minors. He died in Dublin, Ireland, where he lived until his retirement
 in 1955.
@@ -170,7 +170,7 @@ Content Length: 29,450 characters
 
 HUGGINGFACE TRANSFORMERS SUMMARY:
 --------------------------------------------------------------------------------
-Max Planck: Max Karl Ernst Ludwig Planck (German: [maks ˈplaŋk] ; 23 April 1858
+Max Planck: Max Karl Ernst Ludwig Planck (23 April 1858
 – 4 October 1947) was a German theoretical physicist whose discovery of energy
 quanta won him the Nobel Prize in Physics in 1918. He is known for the Planck
 constant, which is of foundational importance for quantum physics, and which he
