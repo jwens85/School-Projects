@@ -15,7 +15,7 @@ print("="*60)
 
 gpu_available = len(gpus) > 0
 
-print(f"✅ GPU Available: {gpu_available}")
+print(f"GPU Available: {gpu_available}")
 if gpu_available:
     print(f"Using GPU for computation")
 else:
