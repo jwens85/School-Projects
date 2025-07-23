@@ -1,28 +1,49 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import sys
 import tensorflow as tf
 
-# Force GPU initialization early and quietly
+# Suppress TensorFlow log messages
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+# Force early GPU initialization
 gpus = tf.config.list_physical_devices('GPU')
 if gpus:
-    # Pre-initialize GPU to get the device creation message out of the way
-    with tf.device('/GPU:0'):
-        _ = tf.constant([1.0])  # Simple operation to trigger GPU initialization
+    try:
+        with tf.device('/GPU:0'):
+            _ = tf.constant([1.0])
+    except RuntimeError as e:
+        print(f"RuntimeError during GPU warm-up: {e}")
 
 print("\n" + "="*60)
 print("TENSORFLOW GPU TEST RESULTS")
 print("="*60)
 
+# TensorFlow version
+print(f"TensorFlow Version: {tf.__version__}")
+
+# Python version
+print(f"Python Version: {sys.version.split()[0]}")
+
+# CUDA and cuDNN support (inferred)
+build_info = tf.sysconfig.get_build_info()
+cuda_version = build_info.get('cuda_version', 'Unknown')
+cudnn_version = build_info.get('cudnn_version', 'Unknown')
+
+print(f"CUDA Version (from build): {cuda_version}")
+print(f"cuDNN Version (from build): {cudnn_version}")
+
+# GPU status
 gpu_available = len(gpus) > 0
+print(f"\nGPU Available: {gpu_available}")
 
-print(f"GPU Available: {gpu_available}")
 if gpu_available:
-    print(f"Using GPU for computation")
+    for idx, gpu in enumerate(gpus):
+        print(f"GPU {idx}: {gpu.name}")
 else:
-    print(f"Using CPU for computation")
+    print("No GPU devices detected. Defaulting to CPU.")
 
+# Matrix multiplication test
 print(f"\nRunning matrix multiplication test...")
-
 with tf.device('/GPU:0' if gpu_available else '/CPU:0'):
     a = tf.constant([[1.0, 2.0], [3.0, 4.0]])
     b = tf.constant([[1.0, 0.0], [0.0, 1.0]])
@@ -30,5 +51,5 @@ with tf.device('/GPU:0' if gpu_available else '/CPU:0'):
 
 print(f"Result:")
 print(c.numpy())
-print(f"\n✨ Test completed successfully!")
+print("\nTest completed successfully.")
 print("="*60)
