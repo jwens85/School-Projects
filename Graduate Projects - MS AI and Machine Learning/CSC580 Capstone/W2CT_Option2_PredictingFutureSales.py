@@ -64,12 +64,14 @@ import matplotlib.pyplot as plt
 #environment, but for the purposes of a school project, hard-coded paths are fine
 training_data_df = pd.read_csv("data/W2CT_Sales/sales_data_training.csv")
 test_data_df = pd.read_csv("data/W2CT_Sales/sales_data_test.csv")
+#(Yadav, 2025)
 
 #Here's where we satisfy the project requirement to normalize the dataset by scaling values to the 0-1
 #range using MinMaxScaler. I experimented with other scaling functions like RobustScaler and MaxAbsScaler
 #but the differences in MSE were negligible, The project requirements seem to require MinMaxScaler, and
 #it performs well enough that we'll just keep to the example
 scaler = MinMaxScaler(feature_range=(0, 1))
+#(Kumar, 2023)
 
 #Scale both the training inputs and outputs. What's happening here is that we're using fit_transform(...)
 #where fit calculates the min/max of each feature, transform then scales each value into the 0-1 range
@@ -81,8 +83,7 @@ scaled_testing = scaler.transform(test_data_df)
 print("Total Earnings values were scaled by multiplying by {:.10f} and adding {:.6f}".format(scaler.scale_[8],
 scaler.min_[8]))
 print()
-#The LLM (Grimoire, 2025) helped me to clean up my print statement here to make it cleaner and more readable
-
+#(Grimoire, 2025)
 
 #Quick r2 check on our training data to confirm that MSE is an appropriate error metric by testing
 #how well a simple linear model fits the scaled features. R2 tells us how much of the variation in total
@@ -97,6 +98,7 @@ baseline_model.fit(X, Y)
 predictions = baseline_model.predict(X)
 r2 = r2_score(Y, predictions)
 print("Baseline Linear Regression r2 on scaled training set: {:.4f}".format(r2))
+#(BMC Software, 2025)
 
 #Create new pandas DataFrames from the scaled data to preserve the original column names and structure.
 #This will make our data easier to work with later, especially when saving to csv or selecting specific
@@ -110,6 +112,7 @@ scaled_testing_df = pd.DataFrame(scaled_testing, columns=test_data_df.columns.va
 #do any additional formatting or conversion
 scaled_training_df.to_csv("data/W2CT_Sales/scaled_train.csv", index=False)
 scaled_testing_df.to_csv("data/W2CT_Sales/scaled_test.csv", index=False)
+#(Yadav, 2025)
 
 #~~~#
 #PART 2: Keras Neural Network
@@ -122,10 +125,12 @@ training_data_df = pd.read_csv("data/W2CT_Sales/scaled_train.csv")
 #features like genre, pricing, exclusivity, etc.
 X = training_data_df.drop('total_earnings', axis=1).values
 Y = training_data_df[['total_earnings']].values
+#(Yadav, 2025)
 
 #We'll be using Keras' Sequential() model for this assignment which is appropriate when we want to stack
 #layers one after another in a straight line, from input to output. It's also required by the assignment
 model = Sequential()
+#(TensorFlow, n.d.)
 
 #Here's where we'll define the NN architecture, conforming specifically to the project's required
 #specifications of using a sequential model with 9 input features, dense layers, ReLU activation
@@ -144,6 +149,7 @@ model = Sequential()
 model.add(Dense(units=64, input_dim=9, activation='relu'))  #First hidden layer
 model.add(Dense(units=32, activation='relu'))  #Second hidden layer
 model.add(Dense(units=1, activation='linear'))  #Output layer with linear activation
+#(TensorFlow, n.d.)
 
 #Here we're going to compile our model. It's important to disambiguate what we mean by 'compile' in this context.
 #We know Python is an interpreted language, and we're not 'compiling' from source code into machine code here, rather,
@@ -154,6 +160,7 @@ model.add(Dense(units=1, activation='linear'))  #Output layer with linear activa
 #updates. Models will tend to converge faster this way and be more stable during training, especially on noisy
 #gradients or sparse data, which makes it appropriate for small or medium size regression tasks like this one.
 model.compile(optimizer='adam', loss='mean_squared_error')
+#(GeeksforGeeks, 2025)
 
 #Train the Keras Sequential NN by using model.fit() to construct and execute a directed acyclic graph (DAG), where
 #each node represents a TF operation. Seeing model.fit() here can appear to be deceptively simple, there's a lot
@@ -164,14 +171,17 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 #to 2 to give per-epoch training summaries without completely overwhelming the output console with batch-level output
 print("\nTraining Keras Sequential Neural Network Model ")
 history = model.fit(X, Y, epochs=50, shuffle=True, verbose=2)
+#(TensorFlow, n.d. -b)
 
 #Same idea as loading the training dataset into a DataFrame, here we'll do the same with the test dataset
 test_data_df = pd.read_csv("data/W2CT_Sales/scaled_test.csv")
+#(Yadav, 2025)
 
 #Here we prepare our test set by splitting it into features (X_test) and target (Y_test). Just like with the training
 #data, we drop our target (total_earnings) to isolate the dependent variable from the columns used to make predictions
 X_test = test_data_df.drop('total_earnings', axis=1).values
 Y_test = test_data_df[['total_earnings']].values
+#(w3resource, 2025)
 
 #Here we're evaluating the trained model on the test set by using model.evaluate(), which runs the forward pass
 #on X_test, compares the predictions to Y_test, and returns the MSE loss. We'll declare test_error_rate here
@@ -181,10 +191,12 @@ test_error_rate = model.evaluate(X_test, Y_test, verbose=0)
 print()
 print("***MSE for the test data set is***: {}".format(test_error_rate))
 print()
+#(Saturn Cloud, 2023)
 
 #Save the model to disk as per project requirements using the 'legacy' HDF5 format.
 model.save("data/W2CT_Sales/trained_model.h5")
 print("HDF5 Model saved to disk.")
+#(TensorFlow, n.d. -a)
 
 #We've suppressed TF warnings for this file, but if we hadn't TF would gripe that our .hd5 model is a legacy format
 #and that while still widely supported, the modern way to save models is in .keras format. So, to that end, we will
@@ -197,6 +209,7 @@ print("HDF5 Model saved to disk.")
 model.save("data/W2CT_Sales/trained_model.keras", save_format="keras")
 print("Keras Model saved to disk.")
 print()
+#(TensorFlow, n.d. -a)
 
 #~~~#
 #PART 3: Make Predictions About a Proposed New Product
@@ -228,6 +241,7 @@ prediction = model.predict(X)
 #Since we just want the scalar prediction value from this nested structure, we'll need to access the first element of
 #the first (only) row using prediction[0][0]
 prediction = prediction[0][0]
+#(Brownlee, 2025)
 
 #Now, we'll need to rescale the data from the 0-1 range back to Dollars. These constants are from when the data was
 #originally scaled down using our MinMax scaler. This block is essentially just reversing the preprocessing that
@@ -236,6 +250,7 @@ prediction = prediction[0][0]
 #and will allow us to format it in a human-readable output with just a bit of formatting on the print line below
 prediction = prediction - scaler.min_[8]
 prediction = prediction / scaler.scale_[8]
+#(Kumar, 2023)
 
 #So, to print the prediction in Dollars format ($xxx,xxx,xxx.xx) we can format our output string using {:, .2f}
 #This tells Python to round the number to two decimal places (.2f) and insert commas as thousands separators (,).
@@ -261,6 +276,7 @@ X_train = training_data_df.drop('total_earnings', axis=1).values
 Y_train = training_data_df['total_earnings'].values.ravel()
 X_test = test_data_df.drop('total_earnings', axis=1).values
 Y_test = test_data_df['total_earnings'].values.ravel()
+#(Codecademy, 2025)
 
 #Here's sklearn's LinearRegression model, just a simple LR model on the scaled training and test datasets. First,
 #a LinearRegression object is instantiated, which models the relationship between the input features and the target
@@ -273,6 +289,7 @@ lin_model.fit(X_train, Y_train)
 lr_predictions = lin_model.predict(X_test)
 lr_mse = mean_squared_error(Y_test, lr_predictions)
 print("Linear Regression MSE on test set: {:.6f}".format(lr_mse))
+#(Scikit-learn Developers, n.d. -c)
 
 #Here's sklearn's DecisionTreeRegressor to model the relationship between the input features and target earnings.
 #This decision tree works by recursively splitting the data into regions based on feature thresholds that minimize
@@ -284,6 +301,7 @@ tree_model.fit(X_train, Y_train)
 tree_predictions = tree_model.predict(X_test)
 tree_mse = mean_squared_error(Y_test, tree_predictions)
 print("Decision Tree Regressor MSE on test set: {:.6f}".format(tree_mse))
+#(Scikit-learn Developers, n.d. -a)
 
 #Here's sklearn's RandomForrestRegressor to evaluate how an ensemble of decision trees performs on the test set. A
 #random forrest combines predictions from multiple trees (in this case, 100) in an attempt to reduce overfitting and
@@ -301,6 +319,7 @@ rf_model.fit(X_train, Y_train)
 rf_predictions = rf_model.predict(X_test)
 rf_mse = mean_squared_error(Y_test, rf_predictions)
 print("Random Forest Regressor MSE on test set: {:.6f}".format(rf_mse))
+#(Scikit-learn Developers, n.d. -b)
 
 #This line just stores the MSE previously calculated during the evaluation phase of step 3. We could honestly remove
 #this line since our test_error_rate is already holding this value, but we'll keep it here for readability and
@@ -331,7 +350,7 @@ sorted_results = sorted(results.items(), key=lambda x: x[1])
 print("\nModel Performance Summary (Lowest MSE first):")
 for name, mse in sorted_results:
     print("{}: {:.6f}".format(name, mse))
-
+#(GeeksforGeeks, 2022)
 
 #Heading into our visualization pipeline here, this block extracts model names and their corresponding MSE values
 #so they can be passed to the bar chart. List comprehensions separate the tuples into two aligned lists: model_names
@@ -349,6 +368,7 @@ plt.xlabel("Model")
 plt.ylabel("Mean Squared Error (MSE)")
 plt.title("Model Comparison - MSE on Test Set")
 plt.grid(axis='y', linestyle='-', alpha=0.7)
+#(Bhuyan, 2024)
 
 #Loops through the bars in the plot and adds numeric labels on top of each bar to make the MSE values easier to
 #interpret at a glance. The plt.text() function then places the value slightly above the top of the bar by offsetting
@@ -359,6 +379,7 @@ for bar in bars:
     height = bar.get_height()
     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.00005,
              "{:.6f}".format(height), ha='center', va='bottom', fontsize=9)
+#(Bhuyan, 2024)
 
 #These two lines render the chart. Using plt.tight_layout() adjusts the spacing of plot elements to avoid overlap
 plt.tight_layout()
@@ -372,6 +393,7 @@ plt.show()
 #model, which we can then sort and display in text and in a PyPlot
 print("\nFeature Importance Analysis:")
 feature_names = training_data_df.drop('total_earnings', axis=1).columns
+#(Scikit-Learn Developers, n.d. -b)
 
 #We begin the process of interpreting the trained RandomForrestRegressor by analyzing which features contributed most
 #to the model's decisions. These values are stored in feature_importances_ You might be wondering, why is there an
@@ -386,6 +408,7 @@ feature_names = training_data_df.drop('total_earnings', axis=1).columns
 #feature_names list and output the top-ranked features.
 rf_importance = rf_model.feature_importances_
 rf_indices = np.argsort(rf_importance)[::-1]
+#(freeCodeCamp, 2022)
 
 #Now we can print the names and importance scores of the top five most influential features in the trained
 #RandomForrestRegressor. The range(min(5, len(feature_names))) loop will run only as many times as we have features.
@@ -395,6 +418,7 @@ rf_indices = np.argsort(rf_importance)[::-1]
 print("\nRandom Forest - Top 5 Most Important Features:")
 for i in range(min(5, len(feature_names))):
     print("{}: {:.4f}".format(feature_names[rf_indices[i]], rf_importance[rf_indices[i]]))
+#(Grimoire, 2025)
 
 #We'll instantiate another PyPlot to visualize feature importance. Similarly to the MSE plot setup, except this time
 #we're using plt.xticks(rotation=45, ha='right') because feature_names can be quite long, giving them an angular
@@ -407,3 +431,58 @@ plt.title("Random Forest Feature Importance")
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
 plt.show()
+#(Bhuyan, 2024)
+
+#References
+#Bhuyan, R. P. (2024, August 26). Matplotlib all graphs with explanation. Medium.
+    #https://medium.com/@rudraprasadbhuyan999/matplotlib-all-graphs-70bb2c427cde
+
+#BMC Software. (2025, July 24). R2 score & mean square error (MSE) explained. BMC Blogs.
+    #https://www.bmc.com/blogs/mean-squared-error-r2-and-variance-in-regression-analysis/
+
+#Brownlee, J. (2022, August 23). How to make predictions with Keras. Machine Learning
+    #Mastery.
+    #https://machinelearningmastery.com/how-to-make-classification-and-regression-predictions-for-deep-learning-models-in-keras/
+
+#Codecademy. (2025, May 30). Python: NumPy .ravel(). Codecademy Docs.
+    #https://www.codecademy.com/resources/docs/numpy/ndarray/ravel
+
+#freeCodeCamp. (2022, December 8). Python slicing – How to slice an array and what does [::-1]
+    #mean? freeCodeCamp. https://www.freecodecamp.org/news/python-slicing-how-to-slice-an-array/
+
+#GeeksforGeeks. (2022, June 21). Python | Ways to sort list of dictionaries by values in Python
+    #using lambda function. GeeksforGeeks.
+    #https://www.geeksforgeeks.org/python/ways-sort-list-dictionaries-values-python-using-lambda-function/
+
+#GeeksforGeeks. (2025, July 23). Adam optimizer in TensorFlow. GeeksforGeeks.
+    #https://www.geeksforgeeks.org/python/adam-optimizer-in-tensorflow/
+
+#Grimoire. (2025). LLM Chat about modeling a sales predictor. OpenAI.
+    #https://chat.openai.com/
+
+#Kumar, A. (2023, December 7). MinMaxScaler vs StandardScaler – Python examples. VitalFlux.
+    #https://vitalflux.com/minmaxscaler-standardscaler-python-examples/
+
+#Scikit-learn Developers. (n.d. -a). Plotting decision tree regression. Scikit-learn.
+    #https://scikit-learn.org/stable/auto_examples/tree/plot_tree_regression.html
+
+#Scikit-learn Developers. (n.d. -b). sklearn.ensemble.RandomForestRegressor. Scikit-learn.
+    #https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html
+
+#Scikit-learn Developers. (n.d. -c). sklearn.linear_model.LinearRegression. Scikit-learn.
+    #https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html
+
+#Saturn Cloud. (2023, July 10). Understanding the use of verbose in Keras model validation.
+    #Saturn Cloud. https://saturncloud.io/blog/understanding-the-use-of-verbose-in-keras-model-validation/
+
+#TensorFlow. (n.d. -a). Save and load models. TensorFlow.
+    #https://www.tensorflow.org/tutorials/keras/save_and_load
+
+#TensorFlow. (n.d. -b). The Sequential model. TensorFlow.
+    #https://www.tensorflow.org/guide/keras/sequential_model
+
+#w3resource. (2025, May 6). Pandas: Split dataset into training and testing sets. w3resource.
+    #https://www.w3resource.com/python-exercises/pandas/pandas-split-dataset-into-training-and-testing-sets.php
+
+#Yadav, A. (2025, February 16). How to read CSV files with parsed dates in pandas? Medium.
+    #https://medium.com/@amit25173/how-to-read-csv-files-with-parsed-dates-in-pandas-a9a8e28218b3
