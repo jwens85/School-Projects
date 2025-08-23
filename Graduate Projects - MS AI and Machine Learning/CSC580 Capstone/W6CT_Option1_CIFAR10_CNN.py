@@ -156,46 +156,16 @@ def plot_training_history(history):
     plt.tight_layout()
     plt.savefig('training_history.png', dpi=300)
     plt.close()
-
-def plot_sample_predictions(model, x_test, y_test, num_samples=10):
-    #CIFAR-10 class names
-    class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
-                   'dog', 'frog', 'horse', 'ship', 'truck']
-
-    #Get random samples
-    indices = np.random.choice(len(x_test), num_samples, replace=False)
-
-    fig, axes = plt.subplots(2, 5, figsize=(12, 6))
-    axes = axes.ravel()
-
-    for i, idx in enumerate(indices):
-        #Get prediction
-        img = x_test[idx]
-        true_label = np.argmax(y_test[idx])
-        pred = model.predict(np.expand_dims(img, axis=0), verbose=0)
-        pred_label = np.argmax(pred)
-        confidence = np.max(pred)
-
-        #Plot image
-        axes[i].imshow(img)
-        axes[i].set_title(f'True: {class_names[true_label]}\n'
-                          f'Pred: {class_names[pred_label]} ({confidence:.2f})',
-                          fontsize=10)
-        axes[i].axis('off')
-
-    plt.tight_layout()
-    plt.savefig('sample_predictions.png', dpi=300)
-    plt.close()
+    #(Grimoire, 2025)
 
 def create_confusion_matrix(true_classes, predicted_classes):
     from sklearn.metrics import confusion_matrix
     import seaborn as sns
 
-    #CIFAR-10 class names
     class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                    'dog', 'frog', 'horse', 'ship', 'truck']
 
-    #Create confusion matrix
+    #Create sklearn confusion matrix
     cm = confusion_matrix(true_classes, predicted_classes)
 
     #Plot confusion matrix
@@ -216,28 +186,30 @@ def main():
     print("CIFAR-10 CNN Classification")
     print("~~~")
 
-    #Step 1: Load and preprocess data
+    #Run the load_and_preprocess_data() function
     x_train, y_train, x_val, y_val, x_test, y_test = load_and_preprocess_data()
 
-    #Step 2: Create CNN model
+    #Run the create_cnn_model() function
     model = create_cnn_model()
 
-    #Step 3: Train the model
+    #Run the train_model() function
     history = train_model(model, x_train, y_train, x_val, y_val, epochs=50)
 
-    #Step 4: Evaluate the model
+    #Run the evaluate_model() function
     test_loss, test_accuracy, predicted_classes, true_classes = evaluate_model(model, x_test, y_test)
 
-    #Step 5: Create visualizations
+    #Run the plot_training_history() function
     plot_training_history(history)
-    plot_sample_predictions(model, x_test, y_test)
-    confusion_matrix = create_confusion_matrix(true_classes, predicted_classes)
+    #(Grimoire, 2025)
 
-    #Step 6: Save the model
+    #Run the create_confusion_matrix() function
+    cm = create_confusion_matrix(true_classes, predicted_classes)
+    print(cm)
+
+    #Timestamped model saving
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     model_filename_h5 = f'cifar10_cnn_model_{timestamp}.h5'
     model_filename_keras = f'cifar10_cnn_model_{timestamp}.keras'
-
     model.save(model_filename_h5)
     model.save(model_filename_keras)
     print(f"\nModel saved as: {model_filename_h5}")
