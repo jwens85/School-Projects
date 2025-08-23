@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-#Set random seeds for reproducibility
+#Set random seeds for academic reproducibility
 np.random.seed(13)
 tf.random.set_seed(13)
 
