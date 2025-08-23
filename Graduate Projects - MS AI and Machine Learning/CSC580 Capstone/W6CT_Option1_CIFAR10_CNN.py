@@ -26,7 +26,7 @@ def load_and_preprocess_data():
     print(f"Test data shape: {x_test.shape}")
     print(f"Test labels shape: {y_test.shape}")
     
-    # Normalize pixel values to [0, 1] using torvision approach
+    # Normalize pixel values to [0, 1]
     x_train = x_train.astype('float32') / 255.0
     x_test = x_test.astype('float32') / 255.0
     
@@ -73,7 +73,7 @@ def create_cnn_model(input_shape=(32, 32, 3), num_classes=10):
     
     return model
 
-def train_model(model, x_train, y_train, x_test, y_test, epochs=50, batch_size=128):
+def train_model(model, x_train, y_train, epochs=50, batch_size=128):
     """Compile and train the model."""
     # Define optimizer and loss function
     optimizer = keras.optimizers.Adam(learning_rate=0.001)
@@ -109,7 +109,7 @@ def train_model(model, x_train, y_train, x_test, y_test, epochs=50, batch_size=1
         x_train, y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_data=(x_test, y_test),
+        validation_split=0.1,
         callbacks=callbacks,
         verbose=1
     )
@@ -225,7 +225,7 @@ def main():
     model = create_cnn_model()
     
     # Step 3: Train the model
-    history = train_model(model, x_train, y_train, x_test, y_test, epochs=50)
+    history = train_model(model, x_train, y_train, epochs=50)
     
     # Step 4: Evaluate the model
     test_loss, test_accuracy, predicted_classes, true_classes = evaluate_model(model, x_test, y_test)
