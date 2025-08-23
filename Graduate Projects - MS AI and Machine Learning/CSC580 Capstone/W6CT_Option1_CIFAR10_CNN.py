@@ -20,7 +20,7 @@ def load_and_preprocess_data():
     #Load the dataset from Keras' internal data repository
     (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
     
-    #Print dataset information
+    #Dataset familiarization using NumPy's .shape functionality
     print(f"Training data shape: {x_train.shape}")
     print(f"Training labels shape: {y_train.shape}")
     print(f"Test data shape: {x_test.shape}")
@@ -30,7 +30,7 @@ def load_and_preprocess_data():
     x_train = x_train.astype('float32') / 255.0
     x_test = x_test.astype('float32') / 255.0
     
-    #Convert labels to categorical (one-hot encoding)
+    #One-hot encoding to convert label integers to binary vectors for cross-entropy loss
     y_train = keras.utils.to_categorical(y_train, 10)
     y_test = keras.utils.to_categorical(y_test, 10)
     
@@ -72,8 +72,8 @@ def create_cnn_model(input_shape=(32, 32, 3), num_classes=10):
     
     return model
 
+#Define the function for model training
 def train_model(model, x_train, y_train, epochs=50, batch_size=128):
-    #Define optimizer and loss function
     optimizer = keras.optimizers.Adam(learning_rate=0.001)
     
     #Compile the model
