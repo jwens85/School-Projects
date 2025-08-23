@@ -15,9 +15,9 @@ np.random.seed(13)
 tf.random.set_seed(13)
 
 def load_and_preprocess_data():
-    print("Loading CIFAR10 dataset")
+    print("Loading CIFAR-10 dataset")
     
-    #Load the dataset
+    #Load the dataset from Keras' internal data repository if not already
     (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
     
     #Print dataset information
