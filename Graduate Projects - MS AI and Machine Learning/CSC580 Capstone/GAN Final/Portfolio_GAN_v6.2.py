@@ -23,7 +23,7 @@ examples = 16
 #Generated image directory path naming
 script_name = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 timestamp = datetime.now().strftime("%m-%d-%Y_%H%M")
-output_dir = f'v6.x_images/{script_name}_{timestamp}'
+output_dir = f'v6.2_images/{script_name}_{timestamp}'
 os.makedirs(output_dir, exist_ok=True)
 #(PyMOTW-3, n.d.)
 
