@@ -172,7 +172,7 @@ def generate_and_save_images(model, epoch, test_data_input):
     plt.savefig(f'{output_dir}/image_at_epoch_{epoch:04d}.png')
     plt.close()
 #(TensorFlow, 2024)
-
+#(Matplotlib, n.d.)
 
 #Training function
 def train(dataset, epochs):
