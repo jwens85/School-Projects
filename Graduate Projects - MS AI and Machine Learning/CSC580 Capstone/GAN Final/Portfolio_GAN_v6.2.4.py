@@ -212,7 +212,7 @@ def train(dataset, epochs):
 
 
 def main():
-    print("CIFAR10 Ships DCGAN v6.2")
+    print("CIFAR10 Ships DCGAN v6.2.4")
     print("~~~")
     print(f"Output directory: {output_dir}")
     print("~~~")
