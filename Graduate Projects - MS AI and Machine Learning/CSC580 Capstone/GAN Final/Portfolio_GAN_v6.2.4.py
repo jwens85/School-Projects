@@ -203,7 +203,8 @@ def train(dataset, epochs):
             model_checkpoint.save(file_prefix=checkpoint_file_path)
 
         print(
-            f'Epoch {epoch + 1:3d}/{epochs} - Gen Loss: {generator_loss_average:.4f} - Disc Loss: {discriminator_loss_average:.4f} - Time: {time.time() - epoch_start_time:.2f}s')
+            f'Epoch {epoch + 1:3d}/{epochs} - Gen Loss: {generator_loss_average:.4f}'
+            f' - Disc Loss: {discriminator_loss_average:.4f} - Time: {time.time() - epoch_start_time:.2f}s')
 
     #Generate final image
     generate_and_save_images(generator, epochs, random_noise_seed)
